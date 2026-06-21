@@ -11,7 +11,7 @@ export default function Features() {
           </div>
 
           <div className="max-w-2xl lg:text-right">
-            <p className="text-xl sm:text-2xl text-black/80 tracking-[-1px]">
+            <p className="text-xl sm:text-[19px] text-black/80 tracking-[-0.5px]">
               Inking makes LaTeX easier to understand and faster to use by keeping writing, preview, error checking, templates, and PDF export in one simple workspace.
             </p>
           </div>

@@ -19,10 +19,8 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-8">
-            <div className="hidden md:flex items-center space-x-6 text-sm text-gray-600 ">
-              <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">
-                Editor <FiChevronDown size={14} />
-              </div>
+            <div className="hidden md:flex items-center space-x-10 text-[14px] font-medium text-black/90 ">
+              <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">Editor</div>
               <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">
                 Templates <FiChevronDown size={14} />
               </div>
@@ -41,7 +39,7 @@ export default function Navbar() {
               <span>GitHub</span>
             </a>
 
-            <Link href="/auth" className="text-sm font-medium text-white bg-black px-4 py-1.5  hover:bg-black/80 transition rounded-[4px] ">
+            <Link href="/auth" className="text-sm  text-black bg-[#a47ff4] px-4 py-1.5  hover:bg-black/80 transition rounded-[3px] ">
               Sing up
             </Link>
           </div>
