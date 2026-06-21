@@ -52,7 +52,7 @@ export default function Workflow() {
               <img
                 src="https://i.pinimg.com/736x/67/ed/c6/67edc698d0e54d442ee3344839f7c217.jpg"
                 alt="Document preview crop 2"
-                className="absolute w-[250%] h-[250%] max-w-none object-cover grayscale contrast-125 opacity-90 -top-[10%] -left-[35%]"
+                className="absolute w-[250%] h-[250%] max-w-none object-cover grayscale contrast-125 opacity-90 top-[5%] -left-[35%]"
               />
             </div>
             <div className="w-36 h-36 bg-black overflow-hidden flex-shrink-0 relative">

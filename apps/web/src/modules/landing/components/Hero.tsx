@@ -35,7 +35,7 @@ export default function Hero() {
         </div>
 
         <div
-          className="relative bg-cover bg-center bg-no-repeat mt-20  overflow-hidden flex items-center justify-center shadow-lg mt-0 rounded-[6px] opacity-80"
+          className="relative bg-cover bg-center bg-no-repeat mt-40  overflow-hidden flex items-center justify-center shadow-lg mt-0 rounded-[6px]  opacity-80"
           style={{ backgroundImage: 'url(https://i.pinimg.com/736x/8c/71/7e/8c717ee9f2f499fd2c94da2b3c34c2af.jpg)' }}
         >
           <img
