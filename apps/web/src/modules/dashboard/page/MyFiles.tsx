@@ -24,7 +24,7 @@ const templates = [
 ];
 export default function MyFiles() {
   return (
-    <section className="bg-[#F4F4F4]">
+    <section className="bg-[#d8d8d8]">
       <section className="px-6 sm:px-8 lg:px-4 rounded-[5px] py-3 bg-white">
         <section className="mt-5 rounded-[3px] border border-gray-100 bg-[#F4F4F4] p-3">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
