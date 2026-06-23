@@ -7,7 +7,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen bg-white font-sans">
+    <div className="flex min-h-screen bg-[#F4F4F4] font-sans">
       <Sidebar />
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 bg-[#F4F4F4]">
@@ -18,7 +18,7 @@ export default function DashboardLayout({
                 <input className="min-w-0 flex-1 bg-transparent text-sm text-black outline-none placeholder:text-gray-400" placeholder="Search" />
               </label>
             </div>
-            <button className="inline-flex w-fit items-center gap-2 rounded-[3px] bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/80 mr-5">
+            <button className="inline-flex w-fit items-center gap-2 rounded-[3px] bg-[#7C6BA6] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#655493] mr-5">
               <FiPlus size={18} />
               Create New File
             </button>

@@ -2,24 +2,24 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FiMenu, FiX, FiGithub, FiChevronDown } from 'react-icons/fi';
-import { IoMdSquare } from 'react-icons/io';
+import { RxBorderSplit } from 'react-icons/rx';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-1">
-            <IoMdSquare size={25} className="text-black/80" />
-            <Link href="/" className="text-xl font-bold tracking-tight text-black/80 flex items-center gap-1">
+            <RxBorderSplit size={19} className="text-[#0f0f0f]" />
+            <Link href="/" className="text-xl font-bold tracking-tight text-black/80 mt-0.5 flex items-center gap-1">
               Inking
             </Link>
           </div>
 
           <div className="flex items-center space-x-8">
-            <div className="hidden md:flex items-center space-x-10 text-[14px] font-medium text-black/90 ">
+            <div className="hidden md:flex items-center gap-6 lg:gap-10 text-[14px] font-medium text-black/90">
               <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">Editor</div>
               <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">
                 Templates <FiChevronDown size={14} />
@@ -33,7 +33,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center gap-3 lg:gap-4">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-2 rounded-[3px] hover:bg-gray-100 transition">
               <FiGithub size={14} />
               <span>GitHub</span>

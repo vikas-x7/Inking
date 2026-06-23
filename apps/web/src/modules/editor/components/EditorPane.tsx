@@ -24,7 +24,7 @@ export default function EditorPane() {
 
   return (
     <section className="flex h-full w-full flex-col  bg-white lg:w-1/2 border-r-3 border-black">
-      <div className="flex py-1.5 items-center justify-between  bg-[#151515] px-3 text-[#ffffff]">
+      <div className="flex py-[7px] items-center justify-between  bg-[#151515] px-3 text-[#ffffff]">
         <div>
           <h1 className="text-[20px]">Untitle</h1>
         </div>
@@ -36,8 +36,6 @@ export default function EditorPane() {
               </button>
             ))}
           </div>
-
-          <button className="inline-flex py-1 items-center gap-4 rounded-[3px] bg-[#808080]  px-5 text-base  text-black">Compile</button>
         </div>
       </div>
 

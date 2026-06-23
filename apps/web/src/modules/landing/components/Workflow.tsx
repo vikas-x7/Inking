@@ -67,8 +67,24 @@ export default function Workflow() {
       </div>
       <div>
         <div className="flex flex-col lg:flex-row justify-between items-end  my-16 lg:my-24">
-          <div className="w-full flex justify-start lg:justify-end">
-            <h1 className="text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black leading-none select-none">Inking</h1>
+          <div className="w-full flex justify-start lg:justify-end relative overflow-visible">
+            <div className="relative isolate inline-block">
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 translate-y-[28%] scale-y-[-0.72] text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black/55 leading-none blur-[14px] opacity-80 select-none"
+              >
+                Inking
+              </span>
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 translate-y-[12%] text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black/45 leading-none blur-[18px] opacity-70 select-none"
+              >
+                Inking
+              </span>
+              <h1 className="relative z-10 text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black leading-none select-none drop-shadow-[0_18px_24px_rgba(0,0,0,0.35)]">
+                Inking
+              </h1>
+            </div>
           </div>
         </div>
 
