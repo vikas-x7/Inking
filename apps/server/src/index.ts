@@ -1,3 +1,4 @@
+import { createServer } from 'node:http';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { env } from './config/env.js';
@@ -19,5 +20,11 @@ app.onError(errorHandler);
 app.get('/', (c) => c.json({ status: 'ok', service: 'ink-api' }));
 
 registerRoutes(app);
+
+const port = Number(new URL(env.API_URL).port);
+
+createServer({}, app.fetch).listen(port, () => {
+  console.log(`ink-api listening on http://localhost:${port}`);
+});
 
 export default app;
