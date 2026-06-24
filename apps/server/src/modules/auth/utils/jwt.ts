@@ -1,30 +1,46 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { env } from '../../../config/env.js';
-import { SESSION_TTL_SECONDS } from '../auth.constants.js';
+import { ACCESS_TOKEN_TTL_SECONDS, REFRESH_TOKEN_TTL_SECONDS } from '../auth.constants.js';
 
-const jwtSecret = new TextEncoder().encode(env.JWT_SECRET);
+const accessJwtSecret = new TextEncoder().encode(env.ACCESS_JWT_SECRET);
+const refreshJwtSecret = new TextEncoder().encode(env.REFRESH_JWT_SECRET);
+
+type TokenType = 'access' | 'refresh';
 
 type SessionJwtPayload = {
   userId: string;
+  type: TokenType;
 };
 
-export const createSessionJwt = async (payload: SessionJwtPayload) => {
+const createJwt = (payload: SessionJwtPayload, secret: Uint8Array, ttlSeconds: number) => {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime(`${SESSION_TTL_SECONDS}s`)
+    .setExpirationTime(`${ttlSeconds}s`)
     .setJti(crypto.randomUUID())
-    .sign(jwtSecret);
+    .sign(secret);
 };
 
-export const verifySessionJwt = async (token: string) => {
-  const { payload } = await jwtVerify(token, jwtSecret);
+export const createAccessJwt = (userId: string) =>
+  createJwt({ userId, type: 'access' }, accessJwtSecret, ACCESS_TOKEN_TTL_SECONDS);
 
-  if (typeof payload.userId !== 'string') {
+export const createRefreshJwt = (userId: string) =>
+  createJwt({ userId, type: 'refresh' }, refreshJwtSecret, REFRESH_TOKEN_TTL_SECONDS);
+
+const verifyJwt = async (token: string, secret: Uint8Array, type: TokenType) => {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+
+    if (typeof payload.userId !== 'string' || payload.type !== type) {
+      return null;
+    }
+
+    return { userId: payload.userId };
+  } catch {
     return null;
   }
-
-  return {
-    userId: payload.userId,
-  };
 };
+
+export const verifyAccessJwt = (token: string) => verifyJwt(token, accessJwtSecret, 'access');
+
+export const verifyRefreshJwt = (token: string) => verifyJwt(token, refreshJwtSecret, 'refresh');

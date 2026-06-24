@@ -23,11 +23,9 @@ export type AuthUser = {
   image: string | null;
 };
 
-export type AuthSession = {
-  id: string;
-  userId: string;
-  token: string;
-  expiresAt: Date;
+export type AuthTokenPair = {
+  accessToken: string;
+  refreshToken: string;
 };
 
 export type OAuthAuthorization = {

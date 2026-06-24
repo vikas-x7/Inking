@@ -5,12 +5,14 @@ import { AUTH_COOKIE_NAMES } from './auth.constants.js';
 import { oauthCallbackSchema } from './auth.schema.js';
 import { authService } from './auth.service.js';
 import {
+  clearAuthCookies,
   clearOAuthCookie,
-  clearSessionCookie,
+  getAccessCookie,
   getOAuthCookie,
-  getSessionCookie,
+  getRefreshCookie,
+  setAccessCookie,
   setOAuthCookie,
-  setSessionCookie,
+  setRefreshCookie,
 } from './utils/cookies.js';
 import { assertMatchingState } from './utils/state.js';
 
@@ -40,11 +42,14 @@ export const authController = {
       throw new AppError('Missing Google code verifier.', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const { sessionToken } = await authService.handleGoogleCallback(query.code, codeVerifier);
+    const { user, accessToken, refreshToken } = await authService.handleGoogleCallback(
+      query.code,
+      codeVerifier,
+    );
 
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.googleState);
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.googleCodeVerifier);
-    setSessionCookie(c, sessionToken);
+    setAuthCookies(c, accessToken, refreshToken);
 
     return c.redirect(authService.getFrontendRedirectUrl());
   },
@@ -63,24 +68,37 @@ export const authController = {
 
     assertMatchingState(query.state, storedState);
 
-    const { sessionToken } = await authService.handleGithubCallback(query.code);
+    const { user, accessToken, refreshToken } = await authService.handleGithubCallback(query.code);
 
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.githubState);
-    setSessionCookie(c, sessionToken);
+    setAuthCookies(c, accessToken, refreshToken);
 
     return c.redirect(authService.getFrontendRedirectUrl());
   },
 
   async me(c: Context) {
-    const user = await authService.getCurrentUser(getSessionCookie(c));
+    const user = await authService.getCurrentUser(getAccessCookie(c));
+
+    return c.json({ user });
+  },
+
+  async refresh(c: Context) {
+    const { user, accessToken, refreshToken } = await authService.refreshTokens(getRefreshCookie(c));
+
+    setAuthCookies(c, accessToken, refreshToken);
 
     return c.json({ user });
   },
 
   async logout(c: Context) {
-    await authService.logout(getSessionCookie(c));
-    clearSessionCookie(c);
+    await authService.logout();
+    clearAuthCookies(c);
 
     return c.json({ success: true });
   },
+};
+
+const setAuthCookies = (c: Context, accessToken: string, refreshToken: string) => {
+  setAccessCookie(c, accessToken);
+  setRefreshCookie(c, refreshToken);
 };

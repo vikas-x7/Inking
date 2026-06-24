@@ -1,7 +1,12 @@
 import type { Context } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { isProduction } from '../../../config/env.js';
-import { AUTH_COOKIE_NAMES, OAUTH_STATE_TTL_SECONDS, SESSION_TTL_SECONDS } from '../auth.constants.js';
+import {
+  ACCESS_TOKEN_TTL_SECONDS,
+  AUTH_COOKIE_NAMES,
+  OAUTH_STATE_TTL_SECONDS,
+  REFRESH_TOKEN_TTL_SECONDS,
+} from '../auth.constants.js';
 
 const baseCookieOptions = {
   httpOnly: true,
@@ -10,17 +15,31 @@ const baseCookieOptions = {
   path: '/',
 } as const;
 
-export const setSessionCookie = (c: Context, token: string) => {
-  setCookie(c, AUTH_COOKIE_NAMES.session, token, {
+export const setAccessCookie = (c: Context, token: string) => {
+  setCookie(c, AUTH_COOKIE_NAMES.accessToken, token, {
     ...baseCookieOptions,
-    maxAge: SESSION_TTL_SECONDS,
+    maxAge: ACCESS_TOKEN_TTL_SECONDS,
   });
 };
 
-export const getSessionCookie = (c: Context) => getCookie(c, AUTH_COOKIE_NAMES.session);
+export const getAccessCookie = (c: Context) => getCookie(c, AUTH_COOKIE_NAMES.accessToken);
 
-export const clearSessionCookie = (c: Context) => {
-  deleteCookie(c, AUTH_COOKIE_NAMES.session, {
+export const setRefreshCookie = (c: Context, token: string) => {
+  setCookie(c, AUTH_COOKIE_NAMES.refreshToken, token, {
+    ...baseCookieOptions,
+    maxAge: REFRESH_TOKEN_TTL_SECONDS,
+  });
+};
+
+export const getRefreshCookie = (c: Context) => getCookie(c, AUTH_COOKIE_NAMES.refreshToken);
+
+export const clearAuthCookies = (c: Context) => {
+  deleteCookie(c, AUTH_COOKIE_NAMES.accessToken, {
+    path: '/',
+    secure: isProduction,
+    sameSite: 'Lax',
+  });
+  deleteCookie(c, AUTH_COOKIE_NAMES.refreshToken, {
     path: '/',
     secure: isProduction,
     sameSite: 'Lax',

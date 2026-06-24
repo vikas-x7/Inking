@@ -1,5 +1,5 @@
 import { prisma } from '../../database/prisma.js';
-import type { AuthSession, AuthUser, OAuthProfile, OAuthTokens } from './auth.types.js';
+import type { AuthUser, OAuthProfile, OAuthTokens } from './auth.types.js';
 
 export const authRepository = {
   findAccount(provider: string, providerAccountId: string) {
@@ -19,6 +19,12 @@ export const authRepository = {
   findUserByEmail(email: string) {
     return prisma.user.findUnique({
       where: { email },
+    });
+  },
+
+  findUserById(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
     });
   },
 
@@ -84,31 +90,6 @@ export const authRepository = {
           },
         },
       });
-    });
-  },
-
-  createSession(userId: string, token: string, expiresAt: Date): Promise<AuthSession> {
-    return prisma.session.create({
-      data: {
-        userId,
-        token,
-        expiresAt,
-      },
-    });
-  },
-
-  findSessionByToken(token: string) {
-    return prisma.session.findUnique({
-      where: { token },
-      include: {
-        user: true,
-      },
-    });
-  },
-
-  deleteSessionByToken(token: string) {
-    return prisma.session.deleteMany({
-      where: { token },
     });
   },
 };

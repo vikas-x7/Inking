@@ -5,11 +5,16 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   FRONTEND_URL: z.string().url().default('http://localhost:3000'),
   API_URL: z.string().url().default('http://localhost:3001'),
-  JWT_SECRET: z
+  ACCESS_JWT_SECRET: z
     .string({
-      error: 'JWT_SECRET is required.',
+      error: 'ACCESS_JWT_SECRET is required.',
     })
-    .min(32, 'JWT_SECRET must be at least 32 characters.'),
+    .min(32, 'ACCESS_JWT_SECRET must be at least 32 characters.'),
+  REFRESH_JWT_SECRET: z
+    .string({
+      error: 'REFRESH_JWT_SECRET is required.',
+    })
+    .min(32, 'REFRESH_JWT_SECRET must be at least 32 characters.'),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
