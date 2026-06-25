@@ -1,4 +1,6 @@
 import type { Context } from 'hono';
+import { HTTP_STATUS } from '../../shared/constants/http.constants.js';
+import { AppError } from '../../shared/utils/app-error.js';
 import { compileBodySchema, compileQuerySchema } from './compile.schema.js';
 import { compileService } from './compile.service.js';
 
@@ -26,7 +28,15 @@ export const compileController = {
   },
 
   async compileFromBody(c: Context) {
-    const { text } = compileBodySchema.parse(await c.req.json());
+    let body: unknown;
+
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new AppError('Request body must be valid JSON.', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const { text } = compileBodySchema.parse(body);
 
     return renderCompileResult(c, text);
   },

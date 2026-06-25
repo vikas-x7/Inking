@@ -39,7 +39,7 @@ export default function Navbar() {
               <span>GitHub</span>
             </a>
 
-            <Link href="/auth" className="text-sm  text-black bg-[#d8d8d8] px-4 py-1.5  hover:bg-black/80 transition rounded-[3px] ">
+            <Link href="/auth" className="text-sm  text-black bg-[#d8d8d8] px-4 py-1.5  hover:bg-black/10 transition rounded-[3px] ">
               Sing up
             </Link>
           </div>

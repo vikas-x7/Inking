@@ -12,10 +12,15 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "jest --runInBand"
   },
   "devDependencies": {
+    "@jest/globals": "^30.4.1",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^30.0.0",
     "@types/node": "^26.1.1",
+    "jest": "^30.4.2",
     "tsx": "^4.23.0",
     "typescript": "^7.0.2"
   }

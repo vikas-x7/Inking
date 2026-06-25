@@ -17,12 +17,12 @@ export default function Hero() {
             </p>
             <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button className="w-full sm:w-auto">
-                <Link href="/auth" className="text-black text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/80 rounded-[3px] bg-[#d8d8d8]">
+                <Link href="/auth" className="text-black text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]">
                   See how works
                 </Link>
               </button>
               <button className="w-full sm:w-auto">
-                <Link href="/auth" className="text-black/90 text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/80 rounded-[3px] bg-[#d8d8d8]">
+                <Link href="/auth" className="text-black/90 text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]">
                   Start editing
                 </Link>
               </button>
