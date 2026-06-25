@@ -19,6 +19,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
+  LATEX_ONLINE_URL: z.string().url().default('https://latexonline.cc'),
 });
 
 const parsed = envSchema.safeParse(process.env);
