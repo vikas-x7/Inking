@@ -22,11 +22,13 @@ export default function Trash() {
           {trashedFiles.map((file, index) => (
             <article key={index} className="min-w-0">
               <div className="h-[300px] rounded-[3px] border border-gray-100 bg-[#F4F4F4] flex flex-col px-4 py-4">
-                  <div className="flex-1 flex items-center justify-center">
-                    <FiTrash2 size={42} className="text-black/60" />
-                  </div>
+                <div className="flex-1 flex items-center justify-center">
+                  <FiTrash2 size={42} className="text-black/60" />
+                </div>
                 <div className="text-start">
-                  <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">{file.title}</h3>
+                  <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">
+                    {file.title}
+                  </h3>
                   <p className="mt-2 text-sm text-gray-400">{file.deleted}</p>
                   <button className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 transition hover:text-black">
                     <FiRefreshCw size={14} />

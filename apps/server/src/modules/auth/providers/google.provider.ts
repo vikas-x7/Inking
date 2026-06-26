@@ -30,12 +30,19 @@ export const googleProvider = {
   createAuthorization(): OAuthAuthorization {
     const state = createOAuthState();
     const codeVerifier = generateCodeVerifier();
-    const url = getGoogleClient().createAuthorizationURL(state, codeVerifier, ['openid', 'profile', 'email']);
+    const url = getGoogleClient().createAuthorizationURL(state, codeVerifier, [
+      'openid',
+      'profile',
+      'email',
+    ]);
 
     return { url, state, codeVerifier };
   },
 
-  async validateCallback(code: string, codeVerifier: string): Promise<{ profile: OAuthProfile; tokens: OAuthTokens }> {
+  async validateCallback(
+    code: string,
+    codeVerifier: string,
+  ): Promise<{ profile: OAuthProfile; tokens: OAuthTokens }> {
     const tokens = await getGoogleClient().validateAuthorizationCode(code, codeVerifier);
     const accessToken = tokens.accessToken();
 

@@ -18,15 +18,14 @@ export const documentsService = {
     return document;
   },
 
-  async createDocument(userId: string, data: { title: string; content: string; description?: string | null }) {
+  async createDocument(
+    userId: string,
+    data: { title: string; content: string; description?: string | null },
+  ) {
     return documentsRepository.create(userId, data);
   },
 
-  async updateDocument(
-    userId: string,
-    documentId: string,
-    data: UpdateDocumentInput,
-  ) {
+  async updateDocument(userId: string, documentId: string, data: UpdateDocumentInput) {
     await this.getDocument(userId, documentId);
 
     return documentsRepository.update(documentId, {

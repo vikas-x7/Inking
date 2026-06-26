@@ -1,4 +1,19 @@
-import { FiBold, FiChevronDown, FiFileText, FiImage, FiItalic, FiLink, FiList, FiPlusSquare, FiRotateCcw, FiRotateCw, FiSearch, FiTag, FiType, FiUpload } from 'react-icons/fi';
+import {
+  FiBold,
+  FiChevronDown,
+  FiFileText,
+  FiImage,
+  FiItalic,
+  FiLink,
+  FiList,
+  FiPlusSquare,
+  FiRotateCcw,
+  FiRotateCw,
+  FiSearch,
+  FiTag,
+  FiType,
+  FiUpload,
+} from 'react-icons/fi';
 import { IoMdClose } from 'react-icons/io';
 import { TbMathFunction } from 'react-icons/tb';
 
@@ -17,7 +32,21 @@ const initialDocument = `\\documentclass{article}
 
 \\end{document}`;
 
-const toolbarButtons = [FiRotateCcw, FiRotateCw, FiType, FiChevronDown, FiBold, FiItalic, TbMathFunction, FiLink, FiPlusSquare, FiTag, FiUpload, FiImage, FiList];
+const toolbarButtons = [
+  FiRotateCcw,
+  FiRotateCw,
+  FiType,
+  FiChevronDown,
+  FiBold,
+  FiItalic,
+  TbMathFunction,
+  FiLink,
+  FiPlusSquare,
+  FiTag,
+  FiUpload,
+  FiImage,
+  FiList,
+];
 
 export default function EditorPane() {
   const lineNumbers = Array.from({ length: 15 }, (_, index) => index + 1);
@@ -31,7 +60,10 @@ export default function EditorPane() {
         <div className="flex gap-2">
           <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
             {toolbarButtons.map((Icon, index) => (
-              <button key={index} className="grid h-7 w-7 shrink-0 place-items-center rounded-[3px] text-[#eeeeee] transition hover:bg-black/10">
+              <button
+                key={index}
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-[3px] text-[#eeeeee] transition hover:bg-black/10"
+              >
                 <Icon size={17} />
               </button>
             ))}
@@ -47,7 +79,11 @@ export default function EditorPane() {
             </div>
           ))}
         </div>
-        <textarea className="min-w-0 h-full resize-none bg-white px-3 py-1 font-sans text-[15px] leading-6 text-black outline-none" defaultValue={initialDocument} spellCheck={false} />
+        <textarea
+          className="min-w-0 h-full resize-none bg-white px-3 py-1 font-sans text-[15px] leading-6 text-black outline-none"
+          defaultValue={initialDocument}
+          spellCheck={false}
+        />
       </div>
     </section>
   );

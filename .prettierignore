@@ -1,0 +1,27 @@
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+dist
+coverage
+.turbo
+
+# Prisma generated client
+packages/database/generated
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Husky runtime
+.husky/_
+
+# Misc
+pnpm-lock.yaml
+*.pem

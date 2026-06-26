@@ -16,17 +16,23 @@ export default function Workflow() {
             <div className="space-y-1 flex-1 min-w-[200px]">
               <div className="text-[15px] font-mono tracking-wider text-gray-500">2</div>
               <div className="text-lg font-bold uppercase">CEREBRAL</div>
-              <p className="text-[14x] text-gray-600 leading-relaxed font-normal">Stop being so cerebral. Do things with your hands. Cook, clean, go outside.</p>
+              <p className="text-[14x] text-gray-600 leading-relaxed font-normal">
+                Stop being so cerebral. Do things with your hands. Cook, clean, go outside.
+              </p>
             </div>
             <div className="space-y-1 flex-1 min-w-[200px]">
               <div className="text-[15px] font-mono tracking-wider text-gray-500">3</div>
               <div className="text-lg font-bold  uppercase">DECEPTIONS</div>
-              <p className="text-[14px] text-gray-600 leading-relaxed font-normal">You are not a freak. You&apos;ve got to learn not to be intimidated by your mind.</p>
+              <p className="text-[14px] text-gray-600 leading-relaxed font-normal">
+                You are not a freak. You&apos;ve got to learn not to be intimidated by your mind.
+              </p>
             </div>
             <div className="space-y-1 flex-1 min-w-[200px]">
               <div className="text-[15px] font-mono tracking-wider text-gray-500">4</div>
               <div className="text-lg font-semibold tracking-[-0.5px] uppercase">TRAJECTORY</div>
-              <p className="text-[14px] text-gray-600 leading-relaxed font-normal">Stop gauging how bad things are in life by how much you panic.</p>
+              <p className="text-[14px] text-gray-600 leading-relaxed font-normal">
+                Stop gauging how bad things are in life by how much you panic.
+              </p>
             </div>
           </div>
         </div>
@@ -69,7 +75,9 @@ export default function Workflow() {
         <div className="flex flex-col lg:flex-row justify-between items-end  my-16 lg:my-24">
           <div className="w-full flex justify-start lg:justify-end relative overflow-visible">
             <div className="relative isolate inline-block">
-              <h1 className="relative z-10 text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black ">Inking</h1>
+              <h1 className="relative z-10 text-7xl sm:text-9xl lg:text-[13rem] font-bold tracking-tighter text-black ">
+                Inking
+              </h1>
             </div>
           </div>
         </div>
@@ -77,7 +85,9 @@ export default function Workflow() {
         <div className="flex flex-col sm:flex-row justify-between gap-6 pt-6 border-t border-gray-300/60 text-xs text-gray-700">
           <div className="flex-1">
             <p className="font-medium text-black">LaTeX Workspace</p>
-            <p className="text-gray-600">Writing, previewing, and exporting documents seamlessly.</p>
+            <p className="text-gray-600">
+              Writing, previewing, and exporting documents seamlessly.
+            </p>
           </div>
 
           <div className="flex-1 font-mono text-[11px] text-gray-500">

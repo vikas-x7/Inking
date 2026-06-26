@@ -11,7 +11,11 @@ const getGithubClient = () => {
     throw new AppError('GitHub OAuth is not configured.', HTTP_STATUS.BAD_REQUEST);
   }
 
-  return new GitHub(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET, `${env.API_URL}/auth/github/callback`);
+  return new GitHub(
+    env.GITHUB_CLIENT_ID,
+    env.GITHUB_CLIENT_SECRET,
+    `${env.API_URL}/auth/github/callback`,
+  );
 };
 
 type GithubUserResponse = {

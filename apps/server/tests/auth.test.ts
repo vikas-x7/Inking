@@ -53,14 +53,11 @@ describe('GET /auth/google/callback', () => {
     db.account.findUnique.mockResolvedValue(null);
     db.user.create.mockResolvedValue(userFixture);
 
-    const res = await app.request(
-      '/auth/google/callback?code=code-1&state=state-123',
-      {
-        headers: {
-          cookie: 'google_oauth_state=state-123; google_oauth_code_verifier=verifier-123',
-        },
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
+      headers: {
+        cookie: 'google_oauth_state=state-123; google_oauth_code_verifier=verifier-123',
       },
-    );
+    });
 
     expect(res.status).toBe(302);
     expect(res.headers.get('location')).toContain('/dashboard');
@@ -70,10 +67,9 @@ describe('GET /auth/google/callback', () => {
   });
 
   it('returns 400 when the OAuth state does not match', async () => {
-    const res = await app.request(
-      '/auth/google/callback?code=code-1&state=wrong',
-      { headers: { cookie: 'google_oauth_state=state-123' } },
-    );
+    const res = await app.request('/auth/google/callback?code=code-1&state=wrong', {
+      headers: { cookie: 'google_oauth_state=state-123' },
+    });
 
     expect(res.status).toBe(400);
   });
@@ -110,10 +106,9 @@ describe('GET /auth/github/callback', () => {
     db.account.findUnique.mockResolvedValue(null);
     db.user.create.mockResolvedValue(userFixture);
 
-    const res = await app.request(
-      '/auth/github/callback?code=code-1&state=state-456',
-      { headers: { cookie: 'github_oauth_state=state-456' } },
-    );
+    const res = await app.request('/auth/github/callback?code=code-1&state=state-456', {
+      headers: { cookie: 'github_oauth_state=state-456' },
+    });
 
     expect(res.status).toBe(302);
     const cookies = res.headers.getSetCookie().join(';');

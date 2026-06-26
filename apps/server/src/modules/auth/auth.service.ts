@@ -6,7 +6,12 @@ import { authRepository } from './auth.repository.js';
 import type { AuthTokenPair, AuthUser } from './auth.types.js';
 import { githubProvider } from './providers/github.provider.js';
 import { googleProvider } from './providers/google.provider.js';
-import { createAccessJwt, createRefreshJwt, verifyAccessJwt, verifyRefreshJwt } from './utils/jwt.js';
+import {
+  createAccessJwt,
+  createRefreshJwt,
+  verifyAccessJwt,
+  verifyRefreshJwt,
+} from './utils/jwt.js';
 
 export const authService = {
   startGoogleOAuth() {

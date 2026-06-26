@@ -15,12 +15,36 @@ const files = [
 ];
 
 const templates = [
-  { title: 'Figma Weave Welcome', tag: 'Figma', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
-  { title: 'Figma Weave Iterators', tag: 'Figma', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
-  { title: 'Multiple Models', tag: 'Report', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
-  { title: 'Editing Images', tag: 'Paper', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
-  { title: 'Compositor Node', tag: 'Resume', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
-  { title: 'Image to Video Models', tag: 'Paper', image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg' },
+  {
+    title: 'Figma Weave Welcome',
+    tag: 'Figma',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
+  {
+    title: 'Figma Weave Iterators',
+    tag: 'Figma',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
+  {
+    title: 'Multiple Models',
+    tag: 'Report',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
+  {
+    title: 'Editing Images',
+    tag: 'Paper',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
+  {
+    title: 'Compositor Node',
+    tag: 'Resume',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
+  {
+    title: 'Image to Video Models',
+    tag: 'Paper',
+    image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
+  },
 ];
 export default function MyFiles() {
   return (
@@ -29,12 +53,23 @@ export default function MyFiles() {
         <section className="mt-5 rounded-[3px] border border-gray-100 bg-[#F4F4F4] p-3">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4 text-sm">
-              <button className="rounded-[3px] bg-[#7C6BA6] px-3 py-1.5 font-medium text-white">All</button>
-              <button className="font-medium text-gray-500 transition hover:text-black">Papers</button>
-              <button className="font-medium text-gray-500 transition hover:text-black">Reports</button>
-              <button className="font-medium text-gray-500 transition hover:text-black">Resumes</button>
+              <button className="rounded-[3px] bg-[#7C6BA6] px-3 py-1.5 font-medium text-white">
+                All
+              </button>
+              <button className="font-medium text-gray-500 transition hover:text-black">
+                Papers
+              </button>
+              <button className="font-medium text-gray-500 transition hover:text-black">
+                Reports
+              </button>
+              <button className="font-medium text-gray-500 transition hover:text-black">
+                Resumes
+              </button>
             </div>
-            <a className="inline-flex w-fit items-center gap-2 border-b border-black text-sm font-medium text-black" href="#">
+            <a
+              className="inline-flex w-fit items-center gap-2 border-b border-black text-sm font-medium text-black"
+              href="#"
+            >
               Browse all templates
               <FiArrowUpRight size={16} />
             </a>
@@ -46,7 +81,9 @@ export default function MyFiles() {
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[3px]">
                   <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.74),transparent_58%)]" />
-                  <p className="absolute bottom-0 left-0 p-4 text-sm font-semibold text-white">{item.title}</p>
+                  <p className="absolute bottom-0 left-0 p-4 text-sm font-semibold text-white">
+                    {item.title}
+                  </p>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <p className="text-xs font-medium text-gray-500">{item.tag}</p>
@@ -58,7 +95,9 @@ export default function MyFiles() {
         </section>
 
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-black px-2 mt-5">My Documents</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-black px-2 mt-5">
+            My Documents
+          </h1>
         </div>
         <section className="">
           <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -69,7 +108,9 @@ export default function MyFiles() {
                     <IoMdDocument size={42} className="text-[#9684AF]" />
                   </div>
                   <div className="text-start">
-                    <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">{file.title}</h3>
+                    <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">
+                      {file.title}
+                    </h3>
                     <p className="mt-2 text-sm text-gray-400">{file.edited}</p>
                   </div>
                 </div>

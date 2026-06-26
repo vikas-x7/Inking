@@ -12,10 +12,7 @@ const createPrismaClient = () =>
       connectionString: env.DATABASE_URL,
       max: env.DATABASE_POOL_SIZE,
     }),
-    log:
-      process.env.NODE_ENV === 'production'
-        ? ['warn', 'error']
-        : ['query', 'warn', 'error'],
+    log: process.env.NODE_ENV === 'production' ? ['warn', 'error'] : ['query', 'warn', 'error'],
     errorFormat: process.env.NODE_ENV === 'production' ? 'minimal' : 'pretty',
   });
 

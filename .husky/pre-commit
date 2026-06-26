@@ -1,0 +1,4 @@
+pnpm lint-staged
+pnpm lint
+pnpm check-types
+pnpm --filter hono test

@@ -18,9 +18,7 @@ const prisma = {
     update: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
     delete: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
   },
-  $transaction: jest.fn<
-    (cb: (tx: unknown) => Promise<unknown>) => Promise<unknown>
-  >(),
+  $transaction: jest.fn<(cb: (tx: unknown) => Promise<unknown>) => Promise<unknown>>(),
 };
 
 prisma.$transaction.mockImplementation(async (cb) => cb(prisma));

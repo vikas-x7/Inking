@@ -12,7 +12,8 @@ export default function Features() {
 
           <div className="max-w-2xl lg:text-right">
             <p className="text-base sm:text-[19px] text-black/80 tracking-normal leading-relaxed">
-              Inking makes LaTeX easier to understand and faster to use by keeping writing, preview, error checking, templates, and PDF export in one simple workspace.
+              Inking makes LaTeX easier to understand and faster to use by keeping writing, preview,
+              error checking, templates, and PDF export in one simple workspace.
             </p>
           </div>
         </div>
@@ -49,18 +50,26 @@ export default function Features() {
 
           <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
-              <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">105+</div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">Ready-to-use templates for papers, reports, resumes, and assignments</p>
+              <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">
+                105+
+              </div>
+              <p className="text-sm text-black/90 font-normal leading-relaxed">
+                Ready-to-use templates for papers, reports, resumes, and assignments
+              </p>
             </div>
 
             <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
               <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">92%</div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">Faster writing flow with source and preview kept side by side</p>
+              <p className="text-sm text-black/90 font-normal leading-relaxed">
+                Faster writing flow with source and preview kept side by side
+              </p>
             </div>
 
             <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
               <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">1M+</div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">Export-ready PDF output for submission, sharing, and printing</p>
+              <p className="text-sm text-black/90 font-normal leading-relaxed">
+                Export-ready PDF output for submission, sharing, and printing
+              </p>
             </div>
           </div>
         </div>

@@ -1,5 +1,9 @@
 import type { Context } from 'hono';
-import { createDocumentSchema, documentIdSchema, updateDocumentSchema } from './documents.schema.js';
+import {
+  createDocumentSchema,
+  documentIdSchema,
+  updateDocumentSchema,
+} from './documents.schema.js';
 import { documentsService } from './documents.service.js';
 
 export const documentsController = {

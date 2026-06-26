@@ -83,7 +83,9 @@ export const authController = {
   },
 
   async refresh(c: Context) {
-    const { user, accessToken, refreshToken } = await authService.refreshTokens(getRefreshCookie(c));
+    const { user, accessToken, refreshToken } = await authService.refreshTokens(
+      getRefreshCookie(c),
+    );
 
     setAuthCookies(c, accessToken, refreshToken);
 

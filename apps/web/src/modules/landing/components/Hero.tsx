@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import Link from 'next/link';
 
@@ -13,16 +14,23 @@ export default function Hero() {
             </h1>
 
             <p className="text-base sm:text-lg text-black/80 max-w-2xl mt-4 leading-relaxed">
-              Write, preview, and export clean LaTeX documents from one focused editor. Perfect for research papers, assignments, reports, resumes, and technical notes.
+              Write, preview, and export clean LaTeX documents from one focused editor. Perfect for
+              research papers, assignments, reports, resumes, and technical notes.
             </p>
             <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button className="w-full sm:w-auto">
-                <Link href="/auth" className="text-black text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]">
+                <Link
+                  href="/auth"
+                  className="text-black text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]"
+                >
                   See how works
                 </Link>
               </button>
               <button className="w-full sm:w-auto">
-                <Link href="/auth" className="text-black/90 text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]">
+                <Link
+                  href="/auth"
+                  className="text-black/90 text-center px-4 py-2 sm:py-1.5 block transition-all hover:bg-black/10 rounded-[3px] bg-[#d8d8d8]"
+                >
                   Start editing
                 </Link>
               </button>
@@ -35,8 +43,11 @@ export default function Hero() {
         </div>
 
         <div
-          className="relative bg-cover bg-center bg-no-repeat overflow-hidden flex items-center justify-center shadow-lg rounded-[6px] opacity-80"
-          style={{ backgroundImage: 'url(https://i.pinimg.com/736x/8c/71/7e/8c717ee9f2f499fd2c94da2b3c34c2af.jpg)' }}
+          className="relative bg-cover bg-center bg-no-repeat overflow-hidden flex items-center justify-center shadow-lg rounded-md opacity-80"
+          style={{
+            backgroundImage:
+              'url(https://i.pinimg.com/736x/8c/71/7e/8c717ee9f2f499fd2c94da2b3c34c2af.jpg)',
+          }}
         >
           <img
             className="w-full max-w-7xl object-contain px-3 py-3 sm:px-8 sm:py-8 lg:px-13 lg:py-13"

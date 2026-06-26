@@ -18,7 +18,10 @@ export const usersService = {
     return user;
   },
 
-  async updateCurrentUser(userId: string, data: { name?: string; image?: string | null }): Promise<AuthUser> {
+  async updateCurrentUser(
+    userId: string,
+    data: { name?: string; image?: string | null },
+  ): Promise<AuthUser> {
     const user = await usersRepository.update(userId, data);
 
     if (!user) {

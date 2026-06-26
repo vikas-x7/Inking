@@ -13,14 +13,19 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-1">
             <RxBorderSplit size={19} className="text-[#0f0f0f]" />
-            <Link href="/" className="text-xl font-bold tracking-tight text-black/80 mt-0.5 flex items-center gap-1">
+            <Link
+              href="/"
+              className="text-xl font-bold tracking-tight text-black/80 mt-0.5 flex items-center gap-1"
+            >
               Inking
             </Link>
           </div>
 
           <div className="flex items-center space-x-8">
             <div className="hidden md:flex items-center gap-6 lg:gap-10 text-[14px] font-medium text-black/90">
-              <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">Editor</div>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">
+                Editor
+              </div>
               <div className="flex items-center gap-1 cursor-pointer hover:text-black transition">
                 Templates <FiChevronDown size={14} />
               </div>
@@ -34,18 +39,29 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-2 rounded-[3px] hover:bg-gray-100 transition">
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-2 rounded-[3px] hover:bg-gray-100 transition"
+            >
               <FiGithub size={14} />
               <span>GitHub</span>
             </a>
 
-            <Link href="/auth" className="text-sm  text-black bg-[#d8d8d8] px-4 py-1.5  hover:bg-black/10 transition rounded-[3px] ">
+            <Link
+              href="/auth"
+              className="text-sm  text-black bg-[#d8d8d8] px-4 py-1.5  hover:bg-black/10 transition rounded-[3px] "
+            >
               Sing up
             </Link>
           </div>
 
           <div className="flex md:hidden items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700 hover:text-black focus:outline-none p-2 ">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-700 hover:text-black focus:outline-none p-2 "
+            >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
           </div>
@@ -65,17 +81,26 @@ export default function Navbar() {
           <div className="pt-4 border-t border-gray-100 flex flex-col space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Open source</span>
-              <a href="https://github.com" className="flex items-center gap-1 text-xs font-medium bg-gray-50 border px-2 py-1 rounded">
+              <a
+                href="https://github.com"
+                className="flex items-center gap-1 text-xs font-medium bg-gray-50 border px-2 py-1 rounded"
+              >
                 <FiGithub size={14} /> GitHub
               </a>
             </div>
             <Link href="/login" className="text-center text-sm font-medium py-2 border rounded-md">
               Log in
             </Link>
-            <Link href="/contact" className="text-center text-sm font-medium py-2 border border-gray-300 rounded-md">
+            <Link
+              href="/contact"
+              className="text-center text-sm font-medium py-2 border border-gray-300 rounded-md"
+            >
               Browse templates
             </Link>
-            <Link href="/auth" className="text-center text-sm font-medium text-white bg-black py-2 rounded-md">
+            <Link
+              href="/auth"
+              className="text-center text-sm font-medium text-white bg-black py-2 rounded-md"
+            >
               Start writing
             </Link>
           </div>

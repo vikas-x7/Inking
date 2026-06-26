@@ -6,13 +6,21 @@ export default function Signup() {
   return (
     <div className="w-full min-h-screen flex flex-col lg:flex-row bg-white font-sans">
       <div className="hidden lg:block lg:w-1/2 relative">
-        <img className="absolute inset-0 w-full h-full object-cover " src="https://i.pinimg.com/1200x/d9/c4/21/d9c421689d84cd36588733a3ac91a61c.jpg" alt="" />
+        <img
+          className="absolute inset-0 w-full h-full object-cover "
+          src="https://i.pinimg.com/1200x/d9/c4/21/d9c421689d84cd36588733a3ac91a61c.jpg"
+          alt=""
+        />
       </div>
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md mx-auto text-center space-y-8">
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-medium tracking-[-1px] text-black/80">Welcome to liking</h1>
-            <p className="text-sm text-black/70">Continue with your preferred provider and start editing you latex code </p>
+            <h1 className="text-2xl sm:text-3xl font-medium tracking-[-1px] text-black/80">
+              Welcome to liking
+            </h1>
+            <p className="text-sm text-black/70">
+              Continue with your preferred provider and start editing you latex code{' '}
+            </p>
           </div>
 
           <div className="flex flex-col gap-3 w-full">
