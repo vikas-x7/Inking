@@ -1,159 +1,160 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+# Inking
 
-## Using this example
+**A LaTeX editor preview, and organize your LaTeX documents with ease.**
 
-Run the following command:
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
+[![Hono](https://img.shields.io/badge/Hono-4-E36002?logo=hono&logoColor=white)](https://hono.dev)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel&logoColor=white)](https://vercel.com)
 
-```sh
-npx create-turbo@latest
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://www.prisma.io)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Jest](https://img.shields.io/badge/Jest-30-C21325?logo=jest&logoColor=white)](https://jestjs.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+
+</div>
+
+---
+
+## About
+
+**Ink** is a self-hosted LaTeX editor that lets you write, compile, and preview documents right in the browser. Built as a Turborepo monorepo with a Next.js frontend and a Hono backend, it provides a clean dashboard to manage documents, templates, and trash, and renders LaTeX source to PDF on the fly.
+
+## Features
+
+- **LaTeX compilation** - render LaTeX source to PDF instantly via a server-side compile proxy.
+- **Split-pane editor** - write LaTeX on the left, preview the rendered result on the right.
+- **Document management** - create, edit, search, and organize documents with per-user ownership isolation.
+- **Archive & trash** - archive documents to keep them out of the way or delete them into the trash.
+- **Templates** - get started quickly from a library of document templates.
+- **OAuth authentication** - login with Google or GitHub (JWT access + rotating refresh tokens in httpOnly cookies).
+- **Typed API contracts** - Zod schema validation on every request and response.
+
+## Tech Stack
+
+### Monorepo
+
+| Layer           | Technology                                                |
+| --------------- | --------------------------------------------------------- |
+| Monorepo Tool   | [Turborepo](https://turbo.build)                          |
+| Package Manager | [pnpm](https://pnpm.io) (workspaces)                      |
+| Language        | [TypeScript](https://www.typescriptlang.org) (throughout) |
+
+### Frontend (`apps/web`)
+
+| Layer     | Technology                                                                |
+| --------- | ------------------------------------------------------------------------- |
+| Framework | [Next.js 16](https://nextjs.org) (App Router)                             |
+| UI        | [React 19](https://react.dev) · [Tailwind CSS 4](https://tailwindcss.com) |
+| Icons     | [react-icons](https://react-icons.github.io/react-icons)                  |
+
+### Backend (`apps/server`)
+
+| Layer          | Technology                                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------------------- |
+| Framework      | [Hono 4](https://hono.dev) via [@hono/node-server](https://github.com/honojs/node-server)                       |
+| Authentication | [arctic](https://arctic.js.org) (Google & GitHub OAuth with PKCE) · [jose](https://github.com/panva/jose) (JWT) |
+| Validation     | [Zod](https://zod.dev)                                                                                          |
+
+### Database (`packages/database`)
+
+| Layer | Technology                                                                                   |
+| ----- | -------------------------------------------------------------------------------------------- |
+| DB    | [PostgreSQL](https://www.postgresql.org)                                                     |
+| ORM   | [Prisma 7](https://www.prisma.io) via [@prisma/adapter-pg](https://github.com/prisma/prisma) |
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+
+- **PostgreSQL**
+- **pnpm** 9+
+
+### Installation
+
+```bash
+git clone https://github.com/your-username/ink.git
+cd ink
+
+pnpm install
+
+cp apps/server/.env.example apps/server/.env
+cp packages/database/.env.example packages/database/.env
+# Edit the .env files with your configuration
+
+pnpm --filter database generate
+pnpm --filter database db:push
+
+pnpm dev
 ```
 
-## What's inside?
+Frontend: [http://localhost:3000](http://localhost:3000) · API: [http://localhost:3001](http://localhost:3001)
 
-This Turborepo includes the following packages/apps:
+### Environment Variables
 
-### Apps and Packages
+`apps/server/.env`:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+NODE_ENV
+FRONTEND_URL
+API_URL
+ACCESS_JWT_SECRET
+REFRESH_JWT_SECRET
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
+LATEX_ONLINE_URL
 ```
 
-Without global `turbo`, use your package manager:
+`packages/database/.env`:
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+```
+DATABASE_URL
+DATABASE_POOL_SIZE
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Scripts
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+| Script             | Description                        |
+| ------------------ | ---------------------------------- |
+| `pnpm dev`         | Start all apps in development mode |
+| `pnpm build`       | Build all apps and packages        |
+| `pnpm lint`        | Lint all apps and packages         |
+| `pnpm format`      | Format code with Prettier          |
+| `pnpm check-types` | Type-check all apps and packages   |
+| `pnpm test`        | Run server unit tests (Jest)       |
 
-```sh
-turbo build --filter=docs
-```
+## Deployment
 
-Without global `turbo`:
+1. Provision a **PostgreSQL** database (Neon, Supabase, Railway, etc.).
+2. Configure all environment variables for production.
+3. Run `pnpm --filter database db:push`.
+4. Build and deploy the frontend (`apps/web`) and backend (`apps/server`) separately.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## Contributing
 
-### Develop
+Contributions are welcome! Please follow the existing code conventions and commit style (conventional commits via commitlint).
 
-To develop all apps and packages, run the following command:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feat/amazing-feature`)
+5. Open a Pull Request
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## License
 
-```sh
-cd my-turborepo
-turbo dev
-```
+Distributed under the **MIT** license. See `LICENSE` for more information.
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+<div align="center">
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+_Built with ❤️ using Next.js, Hono, and Prisma._
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+</div>
