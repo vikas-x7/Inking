@@ -1,8 +1,14 @@
+'use client';
 import React from 'react';
 import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import { authApi } from '@/src/modules/auth/api';
 
 export default function Signup() {
+  const redirectToProvider = (url: string) => {
+    window.location.href = url;
+  };
+
   return (
     <div className="w-full min-h-screen flex flex-col lg:flex-row bg-white font-sans">
       <div className="hidden lg:block lg:w-1/2 relative">
@@ -24,13 +30,19 @@ export default function Signup() {
           </div>
 
           <div className="flex flex-col gap-3 w-full">
-            <button className="w-full flex items-center justify-center gap-3 py-2 px-2 border border-dashed border-black/20 rounded-[3px]  bg-white text-sm font-medium hover:bg-gray-50 transition-all">
+            <button
+              onClick={() => redirectToProvider(authApi.googleUrl)}
+              className="w-full flex items-center justify-center gap-3 py-2 px-2 border border-dashed border-black/20 rounded-[3px]  bg-white text-sm font-medium hover:bg-gray-50 transition-all"
+            >
               <FcGoogle className=" text-lg" />
 
               <span>Continue with Google</span>
             </button>
 
-            <button className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-dashed border-black/20 rounded-[3px]  bg-white text-sm font-medium  hover:bg-gray-50 transition-all">
+            <button
+              onClick={() => redirectToProvider(authApi.githubUrl)}
+              className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-dashed border-black/20 rounded-[3px]  bg-white text-sm font-medium  hover:bg-gray-50 transition-all"
+            >
               <FaGithub className=" text-lg" />
               <span>continue with GitHub</span>
             </button>

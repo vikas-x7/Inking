@@ -1,5 +1,6 @@
 import Sidebar from '@/src/modules/dashboard/components/Sidebar';
-import { FiPlus, FiSearch } from 'react-icons/fi';
+import NewDocumentButton from '@/src/modules/dashboard/components/NewDocumentButton';
+import { FiSearch } from 'react-icons/fi';
 
 export default function DashboardLayout({
   children,
@@ -21,10 +22,7 @@ export default function DashboardLayout({
                 />
               </label>
             </div>
-            <button className="inline-flex w-fit items-center gap-2 rounded-[3px] bg-[#7C6BA6] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#655493] mr-5">
-              <FiPlus size={18} />
-              Create New File
-            </button>
+            <NewDocumentButton />
           </div>
         </header>
         {children}

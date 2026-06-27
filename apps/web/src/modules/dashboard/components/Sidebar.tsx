@@ -2,9 +2,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IoMdSquare } from 'react-icons/io';
-import { FiFile, FiLayout, FiTrash2, FiUser, FiPlus } from 'react-icons/fi';
+import { FiFile, FiLayout, FiTrash2, FiUser, FiLogOut } from 'react-icons/fi';
 import { RxBorderSplit } from 'react-icons/rx';
+import { useAuth } from '@/src/modules/auth/auth-provider';
+import { useLogout } from '@/src/modules/auth/hooks';
 
 const links = [
   { label: 'My files', icon: FiFile, href: '/dashboard' },
@@ -14,6 +15,8 @@ const links = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  const logout = useLogout();
 
   return (
     <aside className="w-56 bg-[#F4F4F4] shrink-0 h-screen sticky top-0 border-r border-gray-100 flex flex-col">
@@ -53,14 +56,34 @@ export default function Sidebar() {
       </nav>
 
       <div className="flex items-center gap-3 px-3 py-2.5 bg-white border border-gray-100">
-        <div className="w-9 h-9 rounded-[3px] bg-[#9684AF]/20 flex items-center justify-center text-[#6B5B95]">
-          <FiUser size={18} />
-        </div>
+        {user?.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={user.image}
+            alt={user.name}
+            className="w-9 h-9 rounded-[3px] object-cover bg-[#9684AF]/20"
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-[3px] bg-[#9684AF]/20 flex items-center justify-center text-[#6B5B95]">
+            <FiUser size={18} />
+          </div>
+        )}
         <div className="min-w-0">
-          <p className="text-sm font-medium text-black truncate">User Name</p>
-          <p className="text-xs text-gray-500 truncate">user@example.com</p>
+          <p className="text-sm font-medium text-black truncate">
+            {isLoading ? 'Loading...' : (user?.name ?? 'Guest')}
+          </p>
+          <p className="text-xs text-gray-500 truncate">{user?.email ?? 'Not signed in'}</p>
         </div>
-        <FiPlus size={16} className="ml-auto text-gray-400" />
+        {user && (
+          <button
+            onClick={() => logout.mutate()}
+            disabled={logout.isPending}
+            className="ml-auto text-gray-400 hover:text-black transition disabled:opacity-50"
+            title="Log out"
+          >
+            <FiLogOut size={16} />
+          </button>
+        )}
       </div>
     </aside>
   );

@@ -29,67 +29,70 @@ export const authRepository = {
   },
 
   upsertOAuthUser(profile: OAuthProfile, tokens: OAuthTokens): Promise<AuthUser> {
-    return prisma.$transaction(async (tx) => {
-      const existingAccount = await tx.account.findUnique({
-        where: {
-          provider_providerAccountId: {
-            provider: profile.provider,
-            providerAccountId: profile.providerAccountId,
+    return prisma.$transaction(
+      async (tx) => {
+        const existingAccount = await tx.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: profile.provider,
+              providerAccountId: profile.providerAccountId,
+            },
           },
-        },
-        include: {
-          user: true,
-        },
-      });
-
-      if (existingAccount) {
-        await tx.account.update({
-          where: { id: existingAccount.id },
-          data: {
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            expiresAt: tokens.expiresAt,
+          include: {
+            user: true,
           },
         });
 
-        return existingAccount.user;
-      }
+        if (existingAccount) {
+          await tx.account.update({
+            where: { id: existingAccount.id },
+            data: {
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              expiresAt: tokens.expiresAt,
+            },
+          });
 
-      const existingUser = await tx.user.findUnique({
-        where: { email: profile.email },
-      });
+          return existingAccount.user;
+        }
 
-      if (existingUser) {
-        await tx.account.create({
-          data: {
-            userId: existingUser.id,
-            provider: profile.provider,
-            providerAccountId: profile.providerAccountId,
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            expiresAt: tokens.expiresAt,
-          },
+        const existingUser = await tx.user.findUnique({
+          where: { email: profile.email },
         });
 
-        return existingUser;
-      }
-
-      return tx.user.create({
-        data: {
-          name: profile.name,
-          email: profile.email,
-          image: profile.image,
-          accounts: {
-            create: {
+        if (existingUser) {
+          await tx.account.create({
+            data: {
+              userId: existingUser.id,
               provider: profile.provider,
               providerAccountId: profile.providerAccountId,
               accessToken: tokens.accessToken,
               refreshToken: tokens.refreshToken,
               expiresAt: tokens.expiresAt,
             },
+          });
+
+          return existingUser;
+        }
+
+        return tx.user.create({
+          data: {
+            name: profile.name,
+            email: profile.email,
+            image: profile.image,
+            accounts: {
+              create: {
+                provider: profile.provider,
+                providerAccountId: profile.providerAccountId,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                expiresAt: tokens.expiresAt,
+              },
+            },
           },
-        },
-      });
-    });
+        });
+      },
+      { maxWait: 10_000, timeout: 20_000 },
+    );
   },
 };

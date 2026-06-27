@@ -1,18 +1,8 @@
+'use client';
+import { useRouter } from 'next/navigation';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import { IoMdDocument } from 'react-icons/io';
-
-const files = [
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-  { title: 'Untitel', edited: 'Last edited 3 months ago' },
-];
+import { useDocuments } from '@/src/modules/documents/hooks';
 
 const templates = [
   {
@@ -46,7 +36,22 @@ const templates = [
     image: 'https://i.pinimg.com/736x/13/18/ee/1318eeb81f7150f1f8fb1082b0988fe1.jpg',
   },
 ];
+
+const formatEditedAt = (value: string) => {
+  const date = new Date(value);
+  const formatted = date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  return `Last edited ${formatted}`;
+};
+
 export default function MyFiles() {
+  const router = useRouter();
+  const { data, isLoading, isError } = useDocuments();
+  const documents = (data?.documents ?? []).filter((document) => !document.isArchived);
+
   return (
     <section className="bg-[#F4F4F4]">
       <section className="px-6 sm:px-8 lg:px-4 rounded-[3px] py-3 bg-white">
@@ -100,23 +105,37 @@ export default function MyFiles() {
           </h1>
         </div>
         <section className="">
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {files.map((file, index) => (
-              <article key={index} className="min-w-0">
-                <div className="h-[300px] rounded-[3px] border border-gray-100 bg-[#F4F4F4] flex flex-col px-4 py-4">
-                  <div className="flex-1 flex items-center justify-center">
-                    <IoMdDocument size={42} className="text-[#9684AF]" />
+          {isLoading ? (
+            <p className="mt-6 px-2 text-sm text-gray-400">Loading documents...</p>
+          ) : isError ? (
+            <p className="mt-6 px-2 text-sm text-red-500">Failed to load documents.</p>
+          ) : documents.length === 0 ? (
+            <p className="mt-6 px-2 text-sm text-gray-400">
+              No documents yet. Create your first file.
+            </p>
+          ) : (
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+              {documents.map((file) => (
+                <button
+                  key={file.id}
+                  onClick={() => router.push(`/editor?id=${file.id}`)}
+                  className="min-w-0 cursor-pointer text-left"
+                >
+                  <div className="h-[300px] rounded-[3px] border border-gray-100 bg-[#F4F4F4] flex flex-col px-4 py-4">
+                    <div className="flex-1 flex items-center justify-center">
+                      <IoMdDocument size={42} className="text-[#9684AF]" />
+                    </div>
+                    <div className="text-start">
+                      <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">
+                        {file.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-400">{formatEditedAt(file.updatedAt)}</p>
+                    </div>
                   </div>
-                  <div className="text-start">
-                    <h3 className="line-clamp-2 text-base font-semibold leading-5 text-black break-words">
-                      {file.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-400">{file.edited}</p>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </button>
+              ))}
+            </div>
+          )}
         </section>
       </section>
     </section>
