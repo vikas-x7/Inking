@@ -26,6 +26,7 @@ function Editor() {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { isDirty, isSubmitting },
   } = useForm<EditorFormValues>({
     defaultValues: { title: '', content: '' },
@@ -53,6 +54,7 @@ function Editor() {
         <EditorPane
           register={register}
           content={content}
+          onContentChange={(value) => setValue('content', value, { shouldDirty: true })}
           onSubmit={onSubmit}
           isDirty={isDirty}
           isSaving={isSubmitting || updateDocument.isPending}

@@ -16,6 +16,7 @@ import {
   FiUpload,
 } from 'react-icons/fi';
 import type { EditorFormValues } from '../page/Editor';
+import CodeEditor from './CodeEditor';
 
 const toolbarButtons = [
   FiRotateCcw,
@@ -36,6 +37,7 @@ const toolbarButtons = [
 interface EditorPaneProps {
   register: UseFormRegister<EditorFormValues>;
   content: string;
+  onContentChange: (value: string) => void;
   onSubmit: () => void;
   isDirty: boolean;
   isSaving: boolean;
@@ -46,15 +48,13 @@ interface EditorPaneProps {
 export default function EditorPane({
   register,
   content,
+  onContentChange,
   onSubmit,
   isDirty,
   isSaving,
   isLoading,
   isError,
 }: EditorPaneProps) {
-  const lineCount = content ? content.split('\n').length : 1;
-  const lineNumbers = Array.from({ length: lineCount }, (_, index) => index + 1);
-
   return (
     <section className="flex h-full w-full flex-col  bg-white lg:w-1/2 border-r-3 border-black">
       <div className="flex py-[7px] items-center justify-between  bg-[#151515] px-3 text-[#ffffff]">
@@ -97,19 +97,8 @@ export default function EditorPane({
           <p className="text-sm text-red-500">Failed to load document.</p>
         </div>
       ) : (
-        <div className="grid flex-1 grid-cols-[64px_minmax(0,1fr)] overflow-hidden bg-white font-sans text-[15px] leading-6 text-black">
-          <div className="select-none border-r border-[#e5e5e5] bg-[#f3f3f3] py-1 text-right text-[#374151]">
-            {lineNumbers.map((line) => (
-              <div key={line} className="h-6 pr-3">
-                {line}
-              </div>
-            ))}
-          </div>
-          <textarea
-            {...register('content')}
-            className="min-w-0 h-full resize-none bg-white px-3 py-1 font-sans text-[15px] leading-6 text-black outline-none"
-            spellCheck={false}
-          />
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <CodeEditor value={content} onChange={onContentChange} />
         </div>
       )}
     </section>
