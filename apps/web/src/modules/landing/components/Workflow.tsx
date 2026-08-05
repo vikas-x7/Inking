@@ -4,7 +4,7 @@ export default function Workflow() {
   return (
     <section className="w-full text-black py-16 px-4 sm:px-6 lg:px-12 font-sans selection:bg-red-500 selection:text-white mt-30">
       <div className="max-w-7xl mx-auto flex flex-col h-[160vh]">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-8 pt-2 mb-30">
+        {/* <div className="flex flex-col lg:flex-row justify-between items-start gap-8 pt-2 mb-30">
           <div className="space-y-1 flex-1 min-w-[130px]">
             <div className="text-[15px] font-mono tracking-wider text-gray-500">1</div>
             <div className="text-lg font-bold uppercase">DISCOMFORT</div>
@@ -35,7 +35,7 @@ export default function Workflow() {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex">
           <div className="w-full ">

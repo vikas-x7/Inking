@@ -1,15 +1,19 @@
-import Features from '@/src/modules/landing/components/Features';
+import FeatureGrid from '@/src/modules/landing/components/FeatureGrid';
 import Hero from '@/src/modules/landing/components/Hero';
 import Navbar from '@/src/modules/landing/components/Navbar';
-import Workflow from '@/src/modules/landing/components/Workflow';
+import Footer from '../components/Footer';
+import Faq from '../components/Faq';
+import CtaSection from '../components/CtaSection';
 
 function Landing() {
   return (
-    <section>
+    <section className="bg-[#000000] min-h-screen">
       <Navbar />
       <Hero />
-      <Features />
-      <Workflow />
+      <FeatureGrid />
+      <Faq />
+      <CtaSection />
+      <Footer />
     </section>
   );
 }
