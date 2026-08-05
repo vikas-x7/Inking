@@ -6,6 +6,14 @@ export function useCompile() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
+  const reset = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+    setPdfUrl(null);
+  };
+
   const mutation = useMutation({
     mutationFn: compileApi.compile,
     onSuccess: (blob) => {
@@ -25,5 +33,5 @@ export function useCompile() {
     };
   }, []);
 
-  return { ...mutation, pdfUrl };
+  return { ...mutation, pdfUrl, reset };
 }

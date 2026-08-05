@@ -7,7 +7,7 @@ import CtaSection from '../components/CtaSection';
 
 function Landing() {
   return (
-    <section className="bg-[#000000] min-h-screen">
+    <section className="">
       <Navbar />
       <Hero />
       <FeatureGrid />

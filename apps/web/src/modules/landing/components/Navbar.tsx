@@ -1,33 +1,32 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FiMenu, FiX, FiGithub } from 'react-icons/fi';
+import { FiMenu, FiX, FiGithub, FiArrowUpRight } from 'react-icons/fi';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="w-full bg-[#000000] sticky top-0 z-50 ">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between h-16 items-center">
+    <nav className="absolute top-0 left-0 w-full z-50 px-6 lg:px-12 py-4">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Left Section: Logo & Nav Links */}
+        <div className="flex items-center gap-8 md:gap-10">
           {/* Logo Section */}
-          <div className="flex items-center gap-2">
-            <img src="image/inkinglogo.png" alt="" className="w-10 rounded-[5px]" />
-            <Link
-              href="/"
-              className="text-[24px] font-semibold tracking-tight text-white hover:opacity-90 transition ml-[-13px]"
-            >
+          <Link href="/" className="flex items-center gap-2 group">
+            <img
+              src="image/inkinglogo.png"
+              alt="Inking Logo"
+              className="w-10 h-10 rounded-[6px] object-cover"
+            />
+            <span className="text-xl font-bold tracking-tight text-white group-hover:opacity-90 transition ml-[-10px]">
               Inking
-            </Link>
-          </div>
+            </span>
+          </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-7 text-[14px] font-normal text-[#d5d3d3]">
-            <Link href="/editor" className="hover:text-white transition-colors">
-              Editor
-            </Link>
-            <Link href="/dashboard/templates" className="hover:text-white transition-colors">
-              Templates
+          <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/80">
+            <Link href="#features" className="hover:text-white transition-colors">
+              Features
             </Link>
             <Link href="#faq" className="hover:text-white transition-colors">
               FAQ
@@ -36,57 +35,84 @@ export default function Navbar() {
               Contact
             </Link>
           </div>
+        </div>
 
-          {/* Right Action: GitHub Pill Button */}
-          <div className="hidden md:flex items-center gap-3">
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-[6px] bg-[#18181b] hover:bg-[#27272a] text-white  shadow-sm transition-all duration-150"
-            >
-              <FiGithub size={14} />
-              <span>GitHub</span>
-            </a>
-          </div>
+        {/* Right Section: Log in & White Action Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Log in Button (Translucent Pill) */}
+          <Link
+            href="/auth"
+            className="flex items-center gap-1 text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/15 transition-all duration-150"
+          >
+            <span>Log in</span>
+          </Link>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-zinc-400 hover:text-white focus:outline-none p-2"
-            >
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-            </button>
-          </div>
+          {/* GitHub / Primary Action Button (Solid White Pill) */}
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-white hover:bg-white/90 text-black transition-all duration-150 shadow-sm"
+          >
+            <FiGithub size={15} />
+            <span>GitHub</span>
+            <FiArrowUpRight size={14} className="opacity-70" />
+          </a>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="flex md:hidden items-center">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white/80 hover:text-white focus:outline-none p-2"
+          >
+            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden bg-[#0A0908] border-b border-white/10 px-4 pt-3 pb-6 space-y-4">
-          <div className="flex flex-col space-y-3 text-sm text-zinc-300">
-            <Link href="/editor" className="hover:text-white font-medium">
-              Editor
+        <div className="md:hidden mt-3 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 px-5 pt-4 pb-6 space-y-4 shadow-2xl">
+          <div className="flex flex-col space-y-3 text-sm text-zinc-200">
+            <Link
+              href="#features"
+              className="hover:text-white font-medium"
+              onClick={() => setIsOpen(false)}
+            >
+              Features
             </Link>
-            <Link href="/dashboard/templates" className="hover:text-white font-medium">
-              Templates
-            </Link>
-            <Link href="#faq" className="hover:text-white font-medium">
+            <Link
+              href="#faq"
+              className="hover:text-white font-medium"
+              onClick={() => setIsOpen(false)}
+            >
               FAQ
             </Link>
-            <Link href="#" className="hover:text-white font-medium">
+            <Link
+              href="#"
+              className="hover:text-white font-medium"
+              onClick={() => setIsOpen(false)}
+            >
               Contact
             </Link>
           </div>
-          <div className="pt-4 border-t border-white/10 flex flex-col space-y-3">
+          <div className="pt-4 border-t border-white/10 flex flex-col gap-2.5">
+            <Link
+              href="/auth"
+              className="flex items-center justify-center text-sm font-medium py-2 rounded-full bg-white/10 text-white border border-white/15"
+              onClick={() => setIsOpen(false)}
+            >
+              Log in
+            </Link>
             <a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 text-xs font-semibold py-2 rounded-full bg-[#18181b] text-white border border-white/10"
+              className="flex items-center justify-center gap-2 text-sm font-medium py-2 rounded-full bg-white text-black"
+              onClick={() => setIsOpen(false)}
             >
-              <FiGithub size={14} />
+              <FiGithub size={16} />
               <span>GitHub</span>
             </a>
           </div>

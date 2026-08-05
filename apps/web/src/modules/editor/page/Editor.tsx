@@ -1,23 +1,28 @@
 'use client';
 import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
-import { useDocument, useUpdateDocument } from '@/src/modules/documents/hooks';
+import { useCreateDocument, useDocument, useUpdateDocument } from '@/src/modules/documents/hooks';
 import { useCompile } from '@/src/modules/compile/hooks';
 import { getApiErrorMessage } from '@/src/shared/api/api-error';
 import EditorPane from '../components/EditorPane';
 import PreviewPane from '../components/PreviewPane';
+import TopBar from '../components/TopBar';
 
 export interface EditorFormValues {
   title: string;
   content: string;
 }
 
-function Editor() {
-  const searchParams = useSearchParams();
-  const documentId = searchParams.get('id') ?? undefined;
+interface EditorProps {
+  documentUid: string;
+}
 
-  const { data, isLoading, isError } = useDocument(documentId);
+function Editor({ documentUid }: EditorProps) {
+  const router = useRouter();
+
+  const { data, isLoading, isError } = useDocument(documentUid);
+  const createDocument = useCreateDocument();
   const updateDocument = useUpdateDocument();
   const compile = useCompile();
 
@@ -43,23 +48,53 @@ function Editor() {
 
   const content = useWatch({ control, name: 'content' });
 
+  const handleSelectDocument = (id: string) => {
+    compile.reset();
+    router.push(`/editor/${id}`);
+  };
+
+  const handleNewDocument = () => {
+    compile.reset();
+    createDocument.mutate(
+      { title: 'Untitled', content: '' },
+      {
+        onSuccess: ({ document }) => {
+          router.push(`/editor/${document.id}`);
+        },
+      },
+    );
+  };
+
   const onSubmit = handleSubmit((values) => {
-    if (!documentId) return;
-    updateDocument.mutate({ documentId, input: values }, { onSuccess: () => reset(values) });
+    const title = values.title.trim() || 'Untitled';
+
+    updateDocument.mutate(
+      { documentId: documentUid, input: { title, content: values.content } },
+      { onSuccess: () => reset({ title, content: values.content }) },
+    );
   });
 
+  const isSaving = isSubmitting || updateDocument.isPending || createDocument.isPending;
+  const saveError = updateDocument.error ? getApiErrorMessage(updateDocument.error) : null;
+
   return (
-    <div className="relative flex h-screen overflow-hidden bg-[#111827] font-sans text-white">
-      <div className="flex h-screen w-full flex-col lg:flex-row">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#111827] font-sans text-white">
+      <TopBar
+        currentDocumentId={documentUid}
+        onSelectDocument={handleSelectDocument}
+        onNewDocument={handleNewDocument}
+      />
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <EditorPane
           register={register}
           content={content}
           onContentChange={(value) => setValue('content', value, { shouldDirty: true })}
           onSubmit={onSubmit}
           isDirty={isDirty}
-          isSaving={isSubmitting || updateDocument.isPending}
+          isSaving={isSaving}
           isLoading={isLoading}
-          isError={isError || !documentId}
+          isError={isError}
+          saveError={saveError}
         />
         <PreviewPane
           content={content}

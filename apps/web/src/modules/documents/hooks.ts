@@ -27,7 +27,8 @@ export function useCreateDocument() {
 
   return useMutation({
     mutationFn: documentsApi.create,
-    onSuccess: () => {
+    onSuccess: ({ document }) => {
+      queryClient.setQueryData(documentsKeys.detail(document.id), { document });
       queryClient.invalidateQueries({ queryKey: documentsKeys.all });
     },
   });

@@ -60,7 +60,7 @@ describe('GET /auth/google/callback', () => {
     });
 
     expect(res.status).toBe(302);
-    expect(res.headers.get('location')).toContain('/dashboard');
+    expect(res.headers.get('location')).toContain('http://localhost:3000');
     const cookies = res.headers.getSetCookie().join(';');
     expect(cookies).toContain('ink_access_token=');
     expect(cookies).toContain('ink_refresh_token=');

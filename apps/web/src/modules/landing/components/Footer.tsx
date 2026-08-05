@@ -56,16 +56,8 @@ const Footer = () => {
             <h3 className="text-sm text-white">Product</h3>
             <ul className="flex flex-col gap-3 text-[13px] md:text-sm">
               <li>
-                <Link href="/editor" className="text-white/50 transition-colors hover:text-white">
-                  Editor
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/templates"
-                  className="text-white/50 transition-colors hover:text-white"
-                >
-                  Templates
+                <Link href="/auth" className="text-white/50 transition-colors hover:text-white">
+                  Get Started
                 </Link>
               </li>
               <li>

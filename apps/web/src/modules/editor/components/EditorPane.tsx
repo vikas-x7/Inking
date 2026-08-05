@@ -43,6 +43,7 @@ interface EditorPaneProps {
   isSaving: boolean;
   isLoading: boolean;
   isError: boolean;
+  saveError?: string | null;
 }
 
 export default function EditorPane({
@@ -54,6 +55,7 @@ export default function EditorPane({
   isSaving,
   isLoading,
   isError,
+  saveError,
 }: EditorPaneProps) {
   return (
     <section className="flex h-full w-full flex-col  bg-white lg:w-1/2 border-r-3 border-black">
@@ -72,6 +74,11 @@ export default function EditorPane({
             >
               {isSaving ? 'Saving...' : 'Save'}
             </button>
+          )}
+          {saveError && (
+            <p className="max-w-[220px] truncate text-xs text-red-400" title={saveError}>
+              {saveError}
+            </p>
           )}
         </div>
         <div className="flex gap-2">

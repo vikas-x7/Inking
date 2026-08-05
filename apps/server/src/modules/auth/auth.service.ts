@@ -92,7 +92,7 @@ export const authService = {
 
   async logout() {},
 
-  getFrontendRedirectUrl(path = '/dashboard') {
+  getFrontendRedirectUrl(path = '/') {
     return new URL(path, env.FRONTEND_URL).toString();
   },
 };
