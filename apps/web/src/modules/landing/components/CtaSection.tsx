@@ -24,7 +24,7 @@ const CtaSection = () => {
             <Link
               href="/auth"
               id="cta-primary-btn"
-              className="group inline-flex items-center gap-2.5 rounded-xl bg-[#0059FF] hover:bg-[#0055D6] text-white font-medium text-base px-7 py-3 shadow-lg shadow-blue-600/25 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              className="group inline-flex items-center gap-2.5 rounded-xl  text-black bg-white font-medium text-base px-7 py-3 "
             >
               <span>Get started for free</span>
               <MdArrowOutward

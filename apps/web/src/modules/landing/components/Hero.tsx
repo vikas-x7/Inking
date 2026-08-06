@@ -5,16 +5,22 @@ import { MdArrowOutward } from 'react-icons/md';
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-screen text-white overflow-hidden font-sans">
+    <section className="relative w-full min-h-screen text-white bg-black overflow-hidden font-sans">
       {/* ── Background Video ── */}
       <div className="absolute inset-0 z-0">
-        <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+        {/* <video autoPlay loop muted playsInline className="w-full h-full object-cover">
           <source src="https://www.pexels.com/download/video/35345172/" type="video/mp4" />
-        </video>
+        </video> */}
+
+        <img src="https://images.unsplash.com/photo-1707380657552-25fbec5e2b1a?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className="w-full h-full object-cover" />
       </div>
 
+
+      {/* ── Black Gradient Overlay (Bottom to Top) ── */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none" />
+
       {/* ── Foreground Content ── */}
-      <div className="relative z-10 pb-50 mt-70">
+      <div className="relative z-10 pb-50 mt-50">
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
           {/* Main Title / Heading */}
           <h1 className="text-4xl sm:text-6xl md:text-6xl text-white font-semibold">
@@ -22,7 +28,7 @@ export default function Hero() {
           </h1>
 
           {/* Description / Subtitle */}
-          <p className="text-[#e5e5e5] text-base sm:text-lg md:text-[15px]  max-w-3xl mt-5 font-semibold">
+          <p className="text-[#e5e5e5] text-base sm:text-lg md:text-[15px]  max-w-3xl mt-5 font-semibold tracking-[0.3px]">
             Write, preview, and export clean LaTeX documents from one focused editor. Perfect for
             research papers, assignments, reports, resumes, and technical notes.
           </p>
@@ -32,9 +38,9 @@ export default function Hero() {
             <Link
               href="/auth"
               id="cta-primary-btn"
-              className="group inline-flex items-center gap-2.5 rounded-3xl bg-white text-black font-medium text-base px-7 py-3 shadow-lg shadow-blue-600/25 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              className="group inline-flex items-center gap-2.5 rounded-3xl font-semibold bg-white text-black text-base px-7 py-3 "
             >
-              <span>Get started for free</span>
+              <span>Get started free</span>
               <MdArrowOutward
                 size={20}
                 className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -43,7 +49,7 @@ export default function Hero() {
           </div>
 
           {/* Product Demo App Window Frame */}
-          <div className="mt-14 w-full max-w-6xl  border border-white/10 shadow-2xl overflow-hidden relative">
+          <div className="mt-14 w-full max-w-7xl  border border-white/10 shadow-2xl overflow-hidden relative">
             {/* Foreground App Preview Image */}
             <div className="relative ">
               <img
