@@ -34,7 +34,7 @@ export default function Navbar() {
             <Link href="#" className="hover:text-white transition-colors">
               Contact
             </Link>
-                    <Link href="#features" className="hover:text-white transition-colors">
+            <Link href="#features" className="hover:text-white transition-colors">
               Features
             </Link>
             <Link href="#faq" className="hover:text-white transition-colors">

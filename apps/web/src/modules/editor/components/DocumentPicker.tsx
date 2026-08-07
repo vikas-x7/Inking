@@ -1,8 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { FiFile, FiPlus, FiSearch } from 'react-icons/fi';
-import { IoMdDocument } from 'react-icons/io';
-import { useDocuments } from '@/src/modules/documents/hooks';
+import { FiGlobe, FiMoreVertical, FiPlus, FiSearch, FiTrash2, FiX } from 'react-icons/fi';
+import { useDeleteDocument, useDocuments } from '@/src/modules/documents/hooks';
 
 interface DocumentPickerProps {
   open: boolean;
@@ -12,14 +11,52 @@ interface DocumentPickerProps {
   currentDocumentId?: string;
 }
 
-const formatUpdatedAt = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+const formatDateDisplay = (dateString?: string | null) => {
+  if (!dateString) return '—';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  const timeString = date.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
   });
+
+  if (isToday) return `Today at ${timeString}`;
+  if (isYesterday) return `Yesterday at ${timeString}`;
+
+  const month = date.toLocaleDateString(undefined, { month: 'long' });
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  const suffix = (d: number) => {
+    if (d > 3 && d < 21) return 'th';
+    switch (d % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  };
+
+  return `${month} ${day}${suffix(day)} ${year}, ${timeString}`;
 };
 
 export default function DocumentPicker({
@@ -30,7 +67,9 @@ export default function DocumentPicker({
   currentDocumentId,
 }: DocumentPickerProps) {
   const [query, setQuery] = useState('');
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const { data, isLoading, isError } = useDocuments();
+  const deleteDocument = useDeleteDocument();
 
   useEffect(() => {
     if (!open) return;
@@ -56,72 +95,161 @@ export default function DocumentPicker({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 sm:px-6"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[80vh] w-full max-w-md flex-col overflow-hidden rounded-[6px] bg-white shadow-2xl"
+        className="flex h-[580px] max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-[#242831] border border-white/10 shadow-2xl text-white font-sans"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-gray-100 p-4">
-          <h2 className="text-base font-semibold tracking-tight text-black">My Documents</h2>
-          <label className="mt-3 flex h-9 w-full items-center gap-2 rounded-[3px] border border-gray-200 bg-[#F4F4F4] px-2">
-            <FiSearch className="shrink-0 text-gray-400" size={16} />
-            <input
-              autoFocus
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search documents..."
-              className="min-w-0 flex-1 bg-transparent text-sm text-black outline-none placeholder:text-gray-400"
-            />
-          </label>
-          <button
-            onClick={onNewDocument}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] bg-[#7C6BA6] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#655493]"
-          >
-            <FiPlus size={16} />
-            New Document
-          </button>
+        {/* ── Top Bar / Header ── */}
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5 border-b border-white/5">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            {/* Search Input */}
+            <div className="relative flex items-center w-full max-w-xs">
+              <FiSearch className="absolute left-3 text-slate-400" size={16} />
+              <input
+                autoFocus
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search diagrams"
+                className="w-full h-10 rounded-lg bg-[#1B1E25] pl-9 pr-3 text-sm text-white placeholder-slate-400 outline-none border border-white/5 focus:border-white/20 transition"
+              />
+            </div>
+
+            {/* Plan Badge & Stats */}
+            <div className="hidden sm:flex items-center gap-3 text-sm text-slate-300">
+              <div className="flex items-center gap-1.5">
+                <span className="rounded px-2 py-0.5 text-xs font-semibold text-white tracking-wide">
+                  Free
+                </span>
+                <span className="text-slate-300 text-sm">plan</span>
+              </div>
+              <span className="h-4 w-[1px] bg-slate-600/60" />
+              <span className="text-slate-300 text-sm font-normal">
+                Diagrams: {documents.length}/10
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* New Document Button */}
+            <button
+              onClick={onNewDocument}
+              className="flex items-center gap-1.5 rounded-lg bg-black hover:bg-[#0055D6] px-3.5 py-2 text-xs font-medium text-white transition shadow-sm"
+            >
+              <FiPlus size={15} />
+              <span>New</span>
+            </button>
+
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+              aria-label="Close"
+            >
+              <FiX size={20} />
+            </button>
+          </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+        {/* ── Table Container ── */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 sm:px-6 py-4">
           {isLoading ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">Loading documents...</p>
+            <div className="flex h-full items-center justify-center py-12 text-sm text-slate-400">
+              Loading documents...
+            </div>
           ) : isError ? (
-            <p className="px-3 py-6 text-center text-sm text-red-500">Failed to load documents.</p>
+            <div className="flex h-full items-center justify-center py-12 text-sm text-red-400">
+              Failed to load documents.
+            </div>
           ) : documents.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 px-3 py-8 text-center">
-              <FiFile size={28} className="text-gray-300" />
-              <p className="text-sm text-gray-400">
+            <div className="flex h-full flex-col items-center justify-center gap-2 py-12 text-center">
+              <FiGlobe size={32} className="text-slate-500" />
+              <p className="text-sm text-slate-400">
                 {query.trim()
                   ? 'No documents match your search.'
                   : 'No documents yet. Create your first document.'}
               </p>
             </div>
           ) : (
-            <ul>
-              {documents.map((document) => {
-                const active = document.id === currentDocumentId;
-                return (
-                  <li key={document.id}>
-                    <button
+            <div className="w-full">
+              {/* Table Column Headers */}
+              <div className="grid grid-cols-12 gap-4 px-4 py-2.5 text-xs sm:text-sm font-medium text-[#7C8DA1]">
+                <div className="col-span-6 sm:col-span-5">Name</div>
+                <div className="col-span-3 sm:col-span-3">Date Modified</div>
+                <div className="col-span-3 sm:col-span-3">Date Created</div>
+                <div className="col-span-1 text-right"></div>
+              </div>
+
+              {/* Document List Rows */}
+              <div className="mt-1 space-y-1">
+                {documents.map((document) => {
+                  const active = document.id === currentDocumentId;
+                  return (
+                    <div
+                      key={document.id}
                       onClick={() => onSelect(document.id)}
-                      className={`flex w-full items-center gap-3 rounded-[3px] px-2 py-2 text-left transition ${
-                        active ? 'bg-[#9684AF]/20' : 'hover:bg-[#F4F4F4]'
-                      }`}
+                      className={`group relative grid grid-cols-12 items-center gap-4 rounded-lg px-4 py-3.5 text-sm transition-colors cursor-pointer ${active
+                          ? 'bg-[#2F3542] text-white font-medium shadow-sm'
+                          : 'hover:bg-[#2A2E39] text-slate-200'
+                        }`}
                     >
-                      <IoMdDocument size={20} className="shrink-0 text-[#9684AF]" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-black">{document.title}</p>
-                        <p className="truncate text-xs text-gray-400">
-                          Last edited {formatUpdatedAt(document.updatedAt)}
-                        </p>
+                      {/* Name Column */}
+                      <div className="col-span-6 sm:col-span-5 flex items-center gap-3 min-w-0">
+                        <FiGlobe size={18} className="shrink-0 text-slate-400 group-hover:text-slate-200 transition" />
+                        <span className="truncate italic text-slate-100 group-hover:text-white transition">
+                          {document.title || 'Untitled Diagram'}
+                        </span>
                       </div>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+
+                      {/* Date Modified Column */}
+                      <div className="col-span-3 sm:col-span-3 text-slate-400 group-hover:text-slate-300 text-xs sm:text-sm truncate">
+                        {formatDateDisplay(document.updatedAt)}
+                      </div>
+
+                      {/* Date Created Column */}
+                      <div className="col-span-3 sm:col-span-3 text-slate-400 group-hover:text-slate-300 text-xs sm:text-sm truncate">
+                        {formatDateDisplay(document.createdAt)}
+                      </div>
+
+                      {/* Action Column */}
+                      <div className="col-span-1 flex justify-end relative">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuId(activeMenuId === document.id ? null : document.id);
+                          }}
+                          className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition"
+                          title="Options"
+                        >
+                          <FiMoreVertical size={18} />
+                        </button>
+
+                        {/* Options Dropdown */}
+                        {activeMenuId === document.id && (
+                          <div
+                            className="absolute right-0 top-8 z-20 w-36 rounded-lg bg-[#1B1E25] border border-white/10 p-1 shadow-xl"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={() => {
+                                setActiveMenuId(null);
+                                deleteDocument.mutate(document.id);
+                              }}
+                              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition"
+                            >
+                              <FiTrash2 size={14} />
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>

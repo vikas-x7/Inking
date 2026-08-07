@@ -5,6 +5,7 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { StreamLanguage } from '@codemirror/language';
 import { stex } from '@codemirror/legacy-modes/mode/stex';
+import { inkDark } from '../theme/ink-dark';
 
 interface CodeEditorProps {
   value: string;
@@ -29,36 +30,13 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
         doc: value,
         extensions: [
           basicSetup,
+          inkDark,
           StreamLanguage.define(stex),
           EditorView.lineWrapping,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onChangeRef.current(update.state.doc.toString());
             }
-          }),
-          EditorView.theme({
-            '&': {
-              height: '100%',
-              fontSize: '15px',
-              backgroundColor: '#ffffff',
-              color: '#111111',
-            },
-            '.cm-scroller': {
-              fontFamily: 'inherit',
-              lineHeight: '24px',
-            },
-            '.cm-content': {
-              padding: '4px 12px',
-            },
-            '.cm-gutters': {
-              backgroundColor: '#f3f3f3',
-              color: '#374151',
-              borderRight: '1px solid #e5e5e5',
-              paddingLeft: '0',
-            },
-            '.cm-activeLine': { backgroundColor: '#f7f7f7' },
-            '.cm-activeLineGutter': { backgroundColor: '#e9e9e9' },
-            '&.cm-focused': { outline: 'none' },
           }),
         ],
       }),

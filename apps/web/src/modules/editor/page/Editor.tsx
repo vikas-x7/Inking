@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
 import { useCreateDocument, useDocument, useUpdateDocument } from '@/src/modules/documents/hooks';
@@ -8,6 +8,7 @@ import { getApiErrorMessage } from '@/src/shared/api/api-error';
 import EditorPane from '../components/EditorPane';
 import PreviewPane from '../components/PreviewPane';
 import TopBar from '../components/TopBar';
+import type { PdfPageInfo } from '../components/PdfViewer';
 
 export interface EditorFormValues {
   title: string;
@@ -18,8 +19,14 @@ interface EditorProps {
   documentUid: string;
 }
 
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 3;
+const ZOOM_STEP = 0.1;
+
 function Editor({ documentUid }: EditorProps) {
   const router = useRouter();
+  const [zoom, setZoom] = useState(1);
+  const [pageInfo, setPageInfo] = useState<PdfPageInfo>({ current: 1, total: 1 });
 
   const { data, isLoading, isError } = useDocument(documentUid);
   const createDocument = useCreateDocument();
@@ -46,7 +53,13 @@ function Editor({ documentUid }: EditorProps) {
     }
   }, [data, reset]);
 
+  const title = useWatch({ control, name: 'title' });
   const content = useWatch({ control, name: 'content' });
+
+  const changeZoom = (delta: number) =>
+    setZoom((value) =>
+      Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round((value + delta) * 100) / 100)),
+    );
 
   const handleSelectDocument = (id: string) => {
     compile.reset();
@@ -66,11 +79,11 @@ function Editor({ documentUid }: EditorProps) {
   };
 
   const onSubmit = handleSubmit((values) => {
-    const title = values.title.trim() || 'Untitled';
+    const cleanTitle = values.title.trim() || 'Untitled';
 
     updateDocument.mutate(
-      { documentId: documentUid, input: { title, content: values.content } },
-      { onSuccess: () => reset({ title, content: values.content }) },
+      { documentId: documentUid, input: { title: cleanTitle, content: values.content } },
+      { onSuccess: () => reset({ title: cleanTitle, content: values.content }) },
     );
   });
 
@@ -78,28 +91,37 @@ function Editor({ documentUid }: EditorProps) {
   const saveError = updateDocument.error ? getApiErrorMessage(updateDocument.error) : null;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#111827] font-sans text-white">
+    <div className="flex h-screen flex-col overflow-hidden bg-black font-sans text-white">
       <TopBar
         currentDocumentId={documentUid}
         onSelectDocument={handleSelectDocument}
         onNewDocument={handleNewDocument}
+        title={title ?? ''}
+        onTitleChange={(val) => setValue('title', val, { shouldDirty: true })}
+        isDirty={isDirty}
+        isSaving={isSaving}
+        onSave={onSubmit}
+        saveError={saveError}
+        onCompile={() => compile.mutate(content ?? '')}
+        isCompiling={compile.isPending}
+        hasContent={Boolean(content?.trim())}
+        zoom={zoom}
+        onZoomIn={() => changeZoom(ZOOM_STEP)}
+        onZoomOut={() => changeZoom(-ZOOM_STEP)}
+        pageInfo={pageInfo}
+        pdfUrl={compile.pdfUrl}
       />
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <EditorPane
-          register={register}
-          content={content}
+          content={content ?? ''}
           onContentChange={(value) => setValue('content', value, { shouldDirty: true })}
-          onSubmit={onSubmit}
-          isDirty={isDirty}
-          isSaving={isSaving}
           isLoading={isLoading}
           isError={isError}
-          saveError={saveError}
         />
         <PreviewPane
-          content={content}
-          onCompile={() => compile.mutate(content)}
-          isCompiling={compile.isPending}
+          zoom={zoom}
+          onZoomChange={(delta) => changeZoom(delta * ZOOM_STEP)}
+          onPageInfo={setPageInfo}
           pdfUrl={compile.pdfUrl}
           compileError={compile.error ? getApiErrorMessage(compile.error) : null}
         />
