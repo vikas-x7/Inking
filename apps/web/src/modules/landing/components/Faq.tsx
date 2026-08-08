@@ -62,10 +62,10 @@ export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<string | null>(null);
 
   return (
-    <section id="faq" className="bg-black text-white py-14 lg:py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="bg-black text-white py-14 lg:py-20 scroll-mt-24">
+      <div className="max-w-6xl mx-auto ">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-medium -tracking-[2px] md:text-5xl md:-tracking-[3px]">
+          <h1 className="text-4xl font-medium  md:text-5xl tracking-[-0.2px]">
             Frequently Asked Questions
           </h1>
           <p className="mt-4 text-sm text-white/50 md:text-base">Everything to know about Inking</p>

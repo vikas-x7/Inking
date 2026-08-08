@@ -1,24 +1,39 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FiMenu, FiX, FiGithub, FiArrowUpRight } from 'react-icons/fi';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const heroHeight = document.getElementById('hero')?.offsetHeight ?? window.innerHeight;
+      setScrolled(window.scrollY > heroHeight - 100);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <nav className="absolute top-0 left-0 w-full z-50 px-6 lg:px-12 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 px-6 py-4 transition-colors duration-300 ${
+        scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
         {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-8 md:gap-10">
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-2 group">
             <img
-              src="image/inkinglogo.png"
+              src="image/logo.png"
               alt="Inking Logo"
-              className="w-10 h-10 rounded-[6px] object-cover"
+              className="w-7  "
             />
-            <span className="text-xl font-bold tracking-tight text-white group-hover:opacity-90 transition ml-[-10px]">
+            <span className="text-xl  font-bold tracking-tight text-white group-hover:opacity-90 transition">
               Inking
             </span>
           </Link>
@@ -31,17 +46,11 @@ export default function Navbar() {
             <Link href="#faq" className="hover:text-white transition-colors">
               FAQ
             </Link>
-            <Link href="#" className="hover:text-white transition-colors">
-              Contact
+            <Link href="/auth" className="hover:text-white transition-colors">
+              Get start
             </Link>
             <Link href="#features" className="hover:text-white transition-colors">
-              Features
-            </Link>
-            <Link href="#faq" className="hover:text-white transition-colors">
-              FAQ
-            </Link>
-            <Link href="#" className="hover:text-white transition-colors">
-              Contact
+              Demo
             </Link>
           </div>
         </div>
@@ -58,7 +67,7 @@ export default function Navbar() {
 
           {/* GitHub / Primary Action Button (Solid White Pill) */}
           <a
-            href="https://github.com"
+            href="https://github.com/vikas-x7/Inking"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-white hover:bg-white/90 text-black transition-all duration-150 shadow-sm"

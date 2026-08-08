@@ -1,6 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
 import { useRouter } from 'next/navigation';
+import { FiLoader } from 'react-icons/fi';
 import { useForm, useWatch } from 'react-hook-form';
 import { useCreateDocument, useDocument, useUpdateDocument } from '@/src/modules/documents/hooks';
 import { useCompile } from '@/src/modules/compile/hooks';
@@ -27,6 +35,9 @@ function Editor({ documentUid }: EditorProps) {
   const router = useRouter();
   const [zoom, setZoom] = useState(1);
   const [pageInfo, setPageInfo] = useState<PdfPageInfo>({ current: 1, total: 1 });
+  const [editorWidth, setEditorWidth] = useState(50);
+  const [isResizing, setIsResizing] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, isError } = useDocument(documentUid);
   const createDocument = useCreateDocument();
@@ -61,6 +72,31 @@ function Editor({ documentUid }: EditorProps) {
       Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round((value + delta) * 100) / 100)),
     );
 
+  const startResize = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const container = containerRef.current;
+    if (!container) return;
+    setIsResizing(true);
+
+    const onMove = (ev: globalThis.MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+      setEditorWidth(Math.min(80, Math.max(20, pct)));
+    };
+    const onUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, []);
+
   const handleSelectDocument = (id: string) => {
     compile.reset();
     router.push(`/editor/${id}`);
@@ -90,6 +126,33 @@ function Editor({ documentUid }: EditorProps) {
   const isSaving = isSubmitting || updateDocument.isPending || createDocument.isPending;
   const saveError = updateDocument.error ? getApiErrorMessage(updateDocument.error) : null;
 
+  if (isLoading) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black font-sans text-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/image/logo.png" alt="Inking Logo" className="h-7 w-7" />
+        <div className="flex items-center gap-2 text-white/50">
+          <FiLoader size={20} className="animate-spin" />
+          <span className="text-sm">Loading your document...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-black font-sans text-white">
+        <p className="text-sm text-red-400">Failed to load document.</p>
+        <button
+          onClick={() => router.push('/')}
+          className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition hover:opacity-90"
+        >
+          Go to home
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-black font-sans text-white">
       <TopBar
@@ -105,23 +168,38 @@ function Editor({ documentUid }: EditorProps) {
         onCompile={() => compile.mutate(content ?? '')}
         isCompiling={compile.isPending}
         hasContent={Boolean(content?.trim())}
-        zoom={zoom}
-        onZoomIn={() => changeZoom(ZOOM_STEP)}
-        onZoomOut={() => changeZoom(-ZOOM_STEP)}
-        pageInfo={pageInfo}
         pdfUrl={compile.pdfUrl}
       />
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div
+        ref={containerRef}
+        className={`flex min-h-0 flex-1 flex-col lg:flex-row ${
+          isResizing ? 'select-none' : ''
+        }`}
+        style={{ '--editor-w': `${editorWidth}%` } as CSSProperties}
+      >
         <EditorPane
           content={content ?? ''}
           onContentChange={(value) => setValue('content', value, { shouldDirty: true })}
           isLoading={isLoading}
           isError={isError}
         />
+
+        <div
+          onMouseDown={startResize}
+          onDoubleClick={() => setEditorWidth(50)}
+          role="separator"
+          aria-orientation="vertical"
+          title="Drag to resize"
+          className="hidden lg:flex relative w-1.5 shrink-0 cursor-col-resize items-stretch bg-[#1E1E1E] hover:bg-[#0055D6] active:bg-[#0055D6] transition-colors"
+        >
+          <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10 pointer-events-none" />
+        </div>
+
         <PreviewPane
           zoom={zoom}
           onZoomChange={(delta) => changeZoom(delta * ZOOM_STEP)}
           onPageInfo={setPageInfo}
+          pageInfo={pageInfo}
           pdfUrl={compile.pdfUrl}
           compileError={compile.error ? getApiErrorMessage(compile.error) : null}
         />

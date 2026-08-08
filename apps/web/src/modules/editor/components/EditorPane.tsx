@@ -46,7 +46,7 @@ export default function EditorPane({
   isError,
 }: EditorPaneProps) {
   return (
-    <section className="flex h-full w-full flex-col bg-[#1E1E1E] lg:w-1/2 border-r border-white/5">
+    <section className="flex h-full w-full min-w-0 flex-col bg-[#1E1E1E] lg:w-[var(--editor-w)] border-r border-white/5">
       {/* ── Format Toolbar Bar ── */}
      
 

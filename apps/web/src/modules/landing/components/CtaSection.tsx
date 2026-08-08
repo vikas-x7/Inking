@@ -24,7 +24,7 @@ const CtaSection = () => {
             <Link
               href="/auth"
               id="cta-primary-btn"
-              className="group inline-flex items-center gap-2.5 rounded-xl  text-black bg-white font-medium text-base px-7 py-3 "
+              className="group inline-flex items-center gap-2.5 rounded-3xl  text-black bg-white font-medium text-base px-7 py-3 "
             >
               <span>Get started for free</span>
               <MdArrowOutward

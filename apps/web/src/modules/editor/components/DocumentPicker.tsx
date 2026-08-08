@@ -99,7 +99,7 @@ export default function DocumentPicker({
       onClick={onClose}
     >
       <div
-        className="flex h-[580px] max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-[#242831] border border-white/10 shadow-2xl text-white font-sans"
+        className="flex h-[580px] max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-[#252526] border border-white/10 shadow-2xl text-white font-sans"
         onClick={(event) => event.stopPropagation()}
       >
         {/* ── Top Bar / Header ── */}
@@ -107,29 +107,17 @@ export default function DocumentPicker({
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {/* Search Input */}
             <div className="relative flex items-center w-full max-w-xs">
-              <FiSearch className="absolute left-3 text-slate-400" size={16} />
+              <FiSearch className="absolute left-3 text-white/70" size={16} />
               <input
                 autoFocus
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search diagrams"
-                className="w-full h-10 rounded-lg bg-[#1B1E25] pl-9 pr-3 text-sm text-white placeholder-slate-400 outline-none border border-white/5 focus:border-white/20 transition"
+                className="w-full h-10 rounded-lg  pl-9 pr-3 text-sm text-white placeholder-white/40 outline-none border border-white/5"
               />
             </div>
 
-            {/* Plan Badge & Stats */}
-            <div className="hidden sm:flex items-center gap-3 text-sm text-slate-300">
-              <div className="flex items-center gap-1.5">
-                <span className="rounded px-2 py-0.5 text-xs font-semibold text-white tracking-wide">
-                  Free
-                </span>
-                <span className="text-slate-300 text-sm">plan</span>
-              </div>
-              <span className="h-4 w-[1px] bg-slate-600/60" />
-              <span className="text-slate-300 text-sm font-normal">
-                Diagrams: {documents.length}/10
-              </span>
-            </div>
+          
           </div>
 
           <div className="flex items-center gap-2">
@@ -145,7 +133,7 @@ export default function DocumentPicker({
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+              className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition"
               aria-label="Close"
             >
               <FiX size={20} />
@@ -156,7 +144,7 @@ export default function DocumentPicker({
         {/* ── Table Container ── */}
         <div className="min-h-0 flex-1 overflow-y-auto px-4 sm:px-6 py-4">
           {isLoading ? (
-            <div className="flex h-full items-center justify-center py-12 text-sm text-slate-400">
+            <div className="flex h-full items-center justify-center py-12 text-sm text-white/70">
               Loading documents...
             </div>
           ) : isError ? (
@@ -166,7 +154,7 @@ export default function DocumentPicker({
           ) : documents.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 py-12 text-center">
               <FiGlobe size={32} className="text-slate-500" />
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-white/70">
                 {query.trim()
                   ? 'No documents match your search.'
                   : 'No documents yet. Create your first document.'}
@@ -175,7 +163,7 @@ export default function DocumentPicker({
           ) : (
             <div className="w-full">
               {/* Table Column Headers */}
-              <div className="grid grid-cols-12 gap-4 px-4 py-2.5 text-xs sm:text-sm font-medium text-[#7C8DA1]">
+              <div className="grid grid-cols-12 gap-4 px-4 py-2.5 text-xs sm:text-sm font-medium text-white">
                 <div className="col-span-6 sm:col-span-5">Name</div>
                 <div className="col-span-3 sm:col-span-3">Date Modified</div>
                 <div className="col-span-3 sm:col-span-3">Date Created</div>
@@ -197,19 +185,19 @@ export default function DocumentPicker({
                     >
                       {/* Name Column */}
                       <div className="col-span-6 sm:col-span-5 flex items-center gap-3 min-w-0">
-                        <FiGlobe size={18} className="shrink-0 text-slate-400 group-hover:text-slate-200 transition" />
-                        <span className="truncate italic text-slate-100 group-hover:text-white transition">
+                        <FiGlobe size={18} className="shrink-0 text-white/70 group-hover:text-slate-200 transition" />
+                        <span className=" text-slate-100 group-hover:text-white transition">
                           {document.title || 'Untitled Diagram'}
                         </span>
                       </div>
 
                       {/* Date Modified Column */}
-                      <div className="col-span-3 sm:col-span-3 text-slate-400 group-hover:text-slate-300 text-xs sm:text-sm truncate">
+                      <div className="col-span-3 sm:col-span-3 text-white/70 group-hover:text-slate-300 text-xs sm:text-sm truncate">
                         {formatDateDisplay(document.updatedAt)}
                       </div>
 
                       {/* Date Created Column */}
-                      <div className="col-span-3 sm:col-span-3 text-slate-400 group-hover:text-slate-300 text-xs sm:text-sm truncate">
+                      <div className="col-span-3 sm:col-span-3 text-white/70 group-hover:text-slate-300 text-xs sm:text-sm truncate">
                         {formatDateDisplay(document.createdAt)}
                       </div>
 
@@ -220,7 +208,7 @@ export default function DocumentPicker({
                             e.stopPropagation();
                             setActiveMenuId(activeMenuId === document.id ? null : document.id);
                           }}
-                          className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition"
+                          className="p-1 rounded text-white/70 hover:text-white hover:bg-white/10 transition"
                           title="Options"
                         >
                           <FiMoreVertical size={18} />
