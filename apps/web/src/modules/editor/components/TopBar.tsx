@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { FiDownload, FiLogOut, FiUser } from 'react-icons/fi';
-import { useAuth } from '@/src/modules/auth/auth-provider';
-import { useLogout } from '@/src/modules/auth/hooks';
+import { useAuth, useLogout } from '@/src/modules/auth/hooks';
 import DocumentPicker from './DocumentPicker';
 import { MdOutlineAutorenew } from 'react-icons/md';
 

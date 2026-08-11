@@ -19,14 +19,11 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 px-6 py-4 transition-colors duration-300 ${
-        scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 px-6 py-4 transition-colors duration-300 ${scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
-        {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-8 md:gap-10">
-          {/* Logo Section */}
           <Link href="/" className="flex items-center gap-2 group">
             <img
               src="image/logo.png"
@@ -37,8 +34,6 @@ export default function Navbar() {
               Inking
             </span>
           </Link>
-
-          {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/80">
             <Link href="#features" className="hover:text-white transition-colors">
               Features
@@ -54,18 +49,13 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
-
-        {/* Right Section: Log in & White Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Log in Button (Translucent Pill) */}
           <Link
             href="/auth"
             className="flex items-center gap-1 text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/15 transition-all duration-150"
           >
             <span>Log in</span>
           </Link>
-
-          {/* GitHub / Primary Action Button (Solid White Pill) */}
           <a
             href="https://github.com/vikas-x7/Inking"
             target="_blank"
@@ -77,8 +67,6 @@ export default function Navbar() {
             <FiArrowUpRight size={14} className="opacity-70" />
           </a>
         </div>
-
-        {/* Mobile Menu Button */}
         <div className="flex md:hidden items-center">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -88,8 +76,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
       {isOpen && (
         <div className="md:hidden mt-3 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 px-5 pt-4 pb-6 space-y-4 shadow-2xl">
           <div className="flex flex-col space-y-3 text-sm text-zinc-200">

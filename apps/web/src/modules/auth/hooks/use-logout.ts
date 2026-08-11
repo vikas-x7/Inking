@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { authApi } from './api';
-import { useAuth } from './auth-provider';
+import { authApi } from '../api';
+import { useAuth } from './use-auth';
 
 export function useLogout() {
   const queryClient = useQueryClient();

@@ -71,9 +71,9 @@ export default function FAQ() {
           <p className="mt-4 text-sm text-white/50 md:text-base">Everything to know about Inking</p>
         </div>
 
-        {/* Grid container responsive layout balanced */}
+    
         <div className="w-full gap-8 md:grid md:grid-cols-2">
-          {/* Left Column */}
+      
           <div className="flex w-full flex-col gap-3">
             {faqs1.map((f, i) => {
               const id = `1-${i}`;
@@ -111,7 +111,6 @@ export default function FAQ() {
             })}
           </div>
 
-          {/* Right Column */}
           <div className="mt-3 flex w-full flex-col gap-3 md:mt-0">
             {faqs2.map((f, i) => {
               const id = `2-${i}`;

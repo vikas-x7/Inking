@@ -1,5 +1,3 @@
-'use client';
-import React from 'react';
 import Link from 'next/link';
 
 interface ResourceCardItem {
@@ -44,7 +42,7 @@ export default function WhyInking() {
   return (
     <section className="w-full bg-black text-white py-16 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto">
-        {/* ── Header ── */}
+       
         <div className="mb-12 text-left">
           <h2 className="text-3xl sm:text-4xl md:text-4xl text-white  font-semibold ">
             One editor <br />
@@ -57,7 +55,7 @@ export default function WhyInking() {
           </p>
         </div>
 
-        {/* ── Resource Cards ── */}
+     
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {defaultCards.map((card) => (
             <Link key={card.id} href={card.href || '#'} className="group block text-left">

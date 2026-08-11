@@ -12,14 +12,10 @@ const CtaSection = () => {
           <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-5">
             Start writing better <span>LaTeX</span> today
           </h2>
-
-          {/* Sub-text */}
           <p className="text-white/50 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-10">
             Join thousands of researchers, students, and engineers writing cleaner documents faster.
             No setup, no friction.
           </p>
-
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth"

@@ -8,21 +8,16 @@ const Footer = () => {
   return (
     <footer className="w-full overflow-hidden border-t border-white/10 bg-black pt-12 text-white md:pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Grid */}
         <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
-          {/* Brand & Socials Section */}
           <div className="space-y-2 md:col-span-2">
             <div className="flex items-center gap-2 select-none">
               <h1 className="text-[24px]  md:text-[32px]">Inking</h1>
             </div>
-
             <p className="text-sm text-white/50">
               A modern LaTeX editor with live preview and
               <br />
               PDF export. Write, compile, and share.
             </p>
-
-            {/* Social Icons */}
             <div className="flex items-center gap-3">
               <Link
                 href="https://github.com"
@@ -50,8 +45,6 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-
-          {/* Product Section */}
           <div className="space-y-4">
             <h3 className="text-sm text-white">Product</h3>
             <ul className="flex flex-col gap-3 text-[13px] md:text-sm">
@@ -67,8 +60,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
-          {/* Company Section */}
           <div className="space-y-4">
             <h3 className="text-sm text-white">Company</h3>
             <ul className="flex flex-col gap-3 text-[13px] md:text-sm">
@@ -95,11 +86,9 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Copyright Line */}
         <div className="flex flex-col items-center justify-between border-t border-white/5 py-6 text-[12px] text-white/30 md:flex-row">
           <p>&copy; 2026 Inking. All rights reserved.</p>
-          <p>Designed and built with LaTeX.</p>
+          <p>Designed and built with love </p>
         </div>
       </div>
     </footer>

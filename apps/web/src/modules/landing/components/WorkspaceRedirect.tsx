@@ -2,7 +2,7 @@
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/src/modules/auth/auth-provider';
+import { useAuth } from '@/src/modules/auth/hooks';
 import { useCreateDocument, useDocuments } from '@/src/modules/documents/hooks';
 
 export default function WorkspaceRedirect() {
