@@ -1,36 +1,5 @@
 'use client';
-import { TbMathFunction } from 'react-icons/tb';
-import {
-  FiBold,
-  FiChevronDown,
-  FiImage,
-  FiItalic,
-  FiLink,
-  FiList,
-  FiPlusSquare,
-  FiRotateCcw,
-  FiRotateCw,
-  FiTag,
-  FiType,
-  FiUpload,
-} from 'react-icons/fi';
 import CodeEditor from './CodeEditor';
-
-const toolbarButtons = [
-  FiRotateCcw,
-  FiRotateCw,
-  FiType,
-  FiChevronDown,
-  FiBold,
-  FiItalic,
-  TbMathFunction,
-  FiLink,
-  FiPlusSquare,
-  FiTag,
-  FiUpload,
-  FiImage,
-  FiList,
-];
 
 interface EditorPaneProps {
   content: string;
@@ -46,10 +15,7 @@ export default function EditorPane({
   isError,
 }: EditorPaneProps) {
   return (
-    <section className="flex h-full w-full min-w-0 flex-col bg-[#1E1E1E] lg:w-[var(--editor-w)] border-r border-white/5">
-      {/* ── Format Toolbar Bar ── */}
-     
-
+<section className="flex h-full w-full min-w-0 flex-col bg-[#1E1E1E] lg:w-[var(--editor-w)] border-r border-white/5">
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center bg-[#1E1E1E]">
           <p className="text-sm text-slate-400">Loading document...</p>

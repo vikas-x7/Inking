@@ -1,19 +1,6 @@
 'use client';
 import { useState } from 'react';
-import {
-  FiChevronDown,
-  FiClock,
-  FiCloud,
-  FiDownload,
-  FiHelpCircle,
-  FiLayers,
-  FiLogOut,
-  FiPlay,
-  FiShare2,
-  FiUpload,
-  FiUser,
-  FiZap,
-} from 'react-icons/fi';
+import { FiDownload, FiLogOut, FiUser } from 'react-icons/fi';
 import { useAuth } from '@/src/modules/auth/auth-provider';
 import { useLogout } from '@/src/modules/auth/hooks';
 import DocumentPicker from './DocumentPicker';
@@ -23,12 +10,6 @@ interface TopBarProps {
   currentDocumentId?: string;
   onSelectDocument: (documentId: string) => void;
   onNewDocument: () => void;
-  title: string;
-  onTitleChange: (title: string) => void;
-  isDirty: boolean;
-  isSaving: boolean;
-  onSave: () => void;
-  saveError?: string | null;
   onCompile: () => void;
   isCompiling: boolean;
   hasContent: boolean;
@@ -39,21 +20,13 @@ export default function TopBar({
   currentDocumentId,
   onSelectDocument,
   onNewDocument,
-  title,
-  onTitleChange,
-  isDirty,
-  isSaving,
-  onSave,
-  saveError,
   onCompile,
   isCompiling,
   hasContent,
   pdfUrl,
 }: TopBarProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [aiEnabled, setAiEnabled] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const { user, isLoading } = useAuth();
   const logout = useLogout();
@@ -76,7 +49,6 @@ export default function TopBar({
     link.href = pdfUrl;
     link.download = 'document.pdf';
     link.click();
-    setShowExportMenu(false);
   };
 
   return (

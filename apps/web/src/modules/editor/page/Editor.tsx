@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { FiLoader } from 'react-icons/fi';
 import { useForm, useWatch } from 'react-hook-form';
-import { useCreateDocument, useDocument, useUpdateDocument } from '@/src/modules/documents/hooks';
+import { useCreateDocument, useDocument } from '@/src/modules/documents/hooks';
 import { useCompile } from '@/src/modules/compile/hooks';
 import { getApiErrorMessage } from '@/src/shared/api/api-error';
 import EditorPane from '../components/EditorPane';
@@ -41,16 +41,12 @@ function Editor({ documentUid }: EditorProps) {
 
   const { data, isLoading, isError } = useDocument(documentUid);
   const createDocument = useCreateDocument();
-  const updateDocument = useUpdateDocument();
   const compile = useCompile();
 
   const {
-    register,
-    handleSubmit,
     reset,
     control,
     setValue,
-    formState: { isDirty, isSubmitting },
   } = useForm<EditorFormValues>({
     defaultValues: { title: '', content: '' },
   });
@@ -64,7 +60,6 @@ function Editor({ documentUid }: EditorProps) {
     }
   }, [data, reset]);
 
-  const title = useWatch({ control, name: 'title' });
   const content = useWatch({ control, name: 'content' });
 
   const changeZoom = (delta: number) =>
@@ -114,18 +109,6 @@ function Editor({ documentUid }: EditorProps) {
     );
   };
 
-  const onSubmit = handleSubmit((values) => {
-    const cleanTitle = values.title.trim() || 'Untitled';
-
-    updateDocument.mutate(
-      { documentId: documentUid, input: { title: cleanTitle, content: values.content } },
-      { onSuccess: () => reset({ title: cleanTitle, content: values.content }) },
-    );
-  });
-
-  const isSaving = isSubmitting || updateDocument.isPending || createDocument.isPending;
-  const saveError = updateDocument.error ? getApiErrorMessage(updateDocument.error) : null;
-
   if (isLoading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black font-sans text-white">
@@ -159,12 +142,6 @@ function Editor({ documentUid }: EditorProps) {
         currentDocumentId={documentUid}
         onSelectDocument={handleSelectDocument}
         onNewDocument={handleNewDocument}
-        title={title ?? ''}
-        onTitleChange={(val) => setValue('title', val, { shouldDirty: true })}
-        isDirty={isDirty}
-        isSaving={isSaving}
-        onSave={onSubmit}
-        saveError={saveError}
         onCompile={() => compile.mutate(content ?? '')}
         isCompiling={compile.isPending}
         hasContent={Boolean(content?.trim())}

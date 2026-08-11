@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { FaGoogle, FaGithub } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { authApi } from '@/src/modules/auth/api';
 
