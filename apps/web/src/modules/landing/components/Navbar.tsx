@@ -24,7 +24,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
         <div className="flex items-center gap-8 md:gap-10">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-1 group">
             <img
               src="image/logo.png"
               alt="Inking Logo"
@@ -34,25 +34,26 @@ export default function Navbar() {
               Inking
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/80">
+          <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/90">
             <Link href="#features" className="hover:text-white transition-colors">
               Features
             </Link>
             <Link href="#faq" className="hover:text-white transition-colors">
               FAQ
             </Link>
+               <Link href="#features" className="hover:text-white transition-colors">
+              Demo
+            </Link>
             <Link href="/auth" className="hover:text-white transition-colors">
               Get start
             </Link>
-            <Link href="#features" className="hover:text-white transition-colors">
-              Demo
-            </Link>
+         
           </div>
         </div>
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/auth"
-            className="flex items-center gap-1 text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/15 transition-all duration-150"
+            className="flex items-center gap-1 text-sm font-bold px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/15 transition-all duration-150"
           >
             <span>Log in</span>
           </Link>
@@ -104,7 +105,7 @@ export default function Navbar() {
           <div className="pt-4 border-t border-white/10 flex flex-col gap-2.5">
             <Link
               href="/auth"
-              className="flex items-center justify-center text-sm font-medium py-2 rounded-full bg-white/10 text-white border border-white/15"
+              className="flex items-center justify-center text-sm font-bold py-2 rounded-full bg-white/10 text-white border border-white/15"
               onClick={() => setIsOpen(false)}
             >
               Log in
