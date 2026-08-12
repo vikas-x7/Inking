@@ -7,9 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
 [![Hono](https://img.shields.io/badge/Hono-4-E36002?logo=hono&logoColor=white)](https://hono.dev)
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel&logoColor=white)](https://vercel.com)
-
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-
 [![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://www.prisma.io)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
@@ -23,6 +21,12 @@
 ## About
 
 **Ink** is a self-hosted LaTeX editor that lets you write, compile, and preview documents right in the browser. Built as a Turborepo monorepo with a Next.js frontend and a Hono backend, it provides a clean dashboard to manage documents, templates, and trash, and renders LaTeX source to PDF on the fly.
+
+<p align="center">
+  <img src="apps/web/public/image/hero.png" alt="Inking Landing"  />
+
+</p>
+
 
 ## Features
 
