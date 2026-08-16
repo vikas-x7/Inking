@@ -1,77 +1,82 @@
-import React from 'react';
-import { FiPlus, FiCircle, FiCheck, FiSquare } from 'react-icons/fi';
+import Link from 'next/link';
+
+interface ResourceCardItem {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+  href?: string;
+}
+
+const defaultCards: ResourceCardItem[] = [
+  {
+    id: '1',
+    title: 'Live LaTeX Preview',
+    category:
+      'See your document render in real-time as you typeevery equation, table, and figure appears instantly.',
+    image:
+      'https://i.pinimg.com/736x/cd/63/c7/cd63c743a3ed6a81b887fd19367ec26f.jpg',
+    href: '#',
+  },
+  {
+    id: '2',
+    title: 'Built-in PDF Export',
+    category:
+      'Export your LaTeX documents to publication-ready PDFs with a single click  perfect for journals, assignments, and reports.',
+    image:
+      'https://i.pinimg.com/1200x/2e/ac/e6/2eace612c81c2b90c6bd6741df301d73.jpg',
+    href: '#',
+  },
+  {
+    id: '3',
+    title: 'Cloud-Saved Projects',
+    category:
+      'Your documents are automatically saved and synced across devices  pick up exactly where you left off, anytime.',
+    image:
+      'https://i.pinimg.com/736x/a1/f2/25/a1f225616fd79ab42113751ba430ddb1.jpg',
+    href: '#',
+  },
+];
 
 export default function Features() {
   return (
-    <section className="w-full text-black py-14 sm:py-20 px-4 sm:px-6 lg:px-12 font-sans overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 sm:mb-16 gap-5 sm:gap-8">
-          <div>
-            <h2 className="text-4xl sm:text-6xl tracking-normal font-semibold">Feature</h2>
-          </div>
+    <section id="features" className="w-full bg-black text-white py-16 px-4 sm:px-6 lg:px-8 font-sans scroll-mt-24">
+      <div className="max-w-6xl mx-auto">
 
-          <div className="max-w-2xl lg:text-right">
-            <p className="text-base sm:text-[19px] text-black/80 tracking-normal leading-relaxed">
-              Inking makes LaTeX easier to understand and faster to use by keeping writing, preview,
-              error checking, templates, and PDF export in one simple workspace.
-            </p>
-          </div>
+        <div className="mb-12 text-left">
+          <h2 className="text-3xl sm:text-4xl md:text-4xl text-white  font-semibold ">
+            One editor <br />
+            Every document handled
+          </h2>
+          <p className="text-white/50 text-base sm:text-lg mt-4 max-w-2xl leading-relaxed">
+            Everything you need to write, preview, and publish clean LaTeX  live
+            rendering, one click PDF export, and auto-saved cloud projects in a
+            single focused editor.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          <div className="lg:col-span-4">
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 text-[17px] font-medium text-black/80 tracking-normal">
-              <li className="flex items-center gap-3">
-                <span className="text-base text-black font-bold">
-                  <FiPlus size={17} />
-                </span>{' '}
-                Live Preview
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-sm text-black">
-                  <FiCircle size={17} />
-                </span>{' '}
-                Clean Formatting
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-sm text-black">
-                  <FiCheck size={17} />
-                </span>{' '}
-                Error Checking
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-sm text-black">
-                  <FiSquare size={17} />
-                </span>{' '}
-                PDF Export
-              </li>
-            </ul>
-          </div>
 
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
-              <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">
-                105+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {defaultCards.map((card) => (
+            <Link key={card.id} href={card.href || '#'} className="group block text-left">
+              <div className="w-full aspect-square overflow-hidden rounded-[2px] bg-neutral-900 shadow-lg">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                />
               </div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">
-                Ready-to-use templates for papers, reports, resumes, and assignments
-              </p>
-            </div>
 
-            <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
-              <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">92%</div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">
-                Faster writing flow with source and preview kept side by side
-              </p>
-            </div>
-
-            <div className="bg-white p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col justify-between min-h-52 sm:min-h-72">
-              <div className="text-4xl sm:text-5xl font-normal tracking-normal text-black">1M+</div>
-              <p className="text-sm text-black/90 font-normal leading-relaxed">
-                Export-ready PDF output for submission, sharing, and printing
-              </p>
-            </div>
-          </div>
+              <div className="mt-4">
+                <h3 className="text-white font-semibold text-base sm:text-lg  group-hover:text-slate-200 transition">
+                  {card.title}
+                </h3>
+                <p className="text-white/50 text-xs sm:text-sm font-normal mt-1">
+                  {card.category}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

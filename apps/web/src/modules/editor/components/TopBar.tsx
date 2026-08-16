@@ -4,6 +4,7 @@ import { FiDownload, FiLogOut, FiUser } from 'react-icons/fi';
 import { useAuth, useLogout } from '@/src/modules/auth/hooks';
 import DocumentPicker from './DocumentPicker';
 import { MdOutlineAutorenew } from 'react-icons/md';
+import type { EditorSaveState } from '../page/Editor';
 
 interface TopBarProps {
   currentDocumentId?: string;
@@ -13,6 +14,7 @@ interface TopBarProps {
   isCompiling: boolean;
   hasContent: boolean;
   pdfUrl: string | null;
+  saveState?: EditorSaveState;
 }
 
 export default function TopBar({
@@ -23,6 +25,7 @@ export default function TopBar({
   isCompiling,
   hasContent,
   pdfUrl,
+  saveState = 'idle',
 }: TopBarProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -52,23 +55,24 @@ export default function TopBar({
 
   return (
     <header className="flex h- shrink-0 items-center justify-between border-b border-white/5 bg-[#252526] px-2 py-1 text-white select-none">
-      
-      <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto scrollbar-none ">
-        
+
+      <div className="flex items-center  overflow-x-auto gap-x-1 scrollbar-none ">
+
         <div className="flex">
           <img
             src="/image/logo.png"
             alt="Inking Logo"
             className=" w-5  "
           />
-         
-        </div>
-        <p className='ml-[-6px] font-bold'>  Inking</p>
 
-  
+        </div>
+
+        <p className='ml-[-1px] font-bold mr-5'>  Inking</p>
+
+
         <button
           onClick={() => setIsPickerOpen(true)}
-          className="flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5"
+          className="flex shrink-0 items-center gap-1 rounded-[2px] px-1.5 py-[0.7px] text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5"
         >
           <span className='text-[15px]'>All Document</span>
 
@@ -77,7 +81,7 @@ export default function TopBar({
         <button
           onClick={handleDownloadPdf}
           disabled={!pdfUrl}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex shrink-0 items-center gap-1.5 rounded-[2px] px-1.5 py-[0.7px]  text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Download PDF"
           title="Download PDF"
         >
@@ -86,6 +90,15 @@ export default function TopBar({
         </button>
 
 
+        <button
+          onClick={onCompile}
+          disabled={isCompiling || !hasContent}
+          className="flex items-center gap-1.5 rounded-[2px] px-1.5 py-[0.7px]  font-medium text-white transition shadow-sm disabled:opacity-50"
+        >
+          <MdOutlineAutorenew size={13} className={isCompiling ? 'animate-spin' : ''} />
+
+          <span>{isCompiling ? 'Compiling...' : 'Compile'}</span>
+        </button>
 
 
 
@@ -96,19 +109,23 @@ export default function TopBar({
 
       </div>
 
-      
+
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 pl-2">
+        {/* Save State Indicator */}
+        {saveState !== 'idle' && (
+          <span
+            className={[
+              'text-[11px] font-medium whitespace-nowrap',
+              saveState === 'error' ? 'text-red-400' : 'text-white/50',
+            ].join(' ')}
+          >
+            {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save failed'}
+          </span>
+        )}
+
         {/* Compile Button (MOVED UP) */}
 
-        <button
-          onClick={onCompile}
-          disabled={isCompiling || !hasContent}
-          className="flex items-center gap-1.5 rounded-[5px] bg-[#0052EA] px-3.5 py-1.5 text-xs font-semibold text-white transition shadow-sm disabled:opacity-50"
-        >
-          <MdOutlineAutorenew  size={13} className={isCompiling ? 'animate-spin' : ''}/>
-         
-          <span>{isCompiling ? 'Compiling...' : 'Compile'}</span>
-        </button>
+
 
         {/* Upgrade Button */}
 
@@ -132,7 +149,7 @@ export default function TopBar({
                 {user?.name?.[0]?.toUpperCase() ?? <FiUser size={13} />}
               </div>
             )}
-           
+
           </button>
 
           {showUserMenu && user && (

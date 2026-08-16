@@ -1,27 +1,20 @@
 'use client';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FiLoader } from 'react-icons/fi';
-import { useForm, useWatch } from 'react-hook-form';
-import { useCreateDocument, useDocument } from '@/src/modules/documents/hooks';
+import { documentsApi } from '@/src/modules/documents/api';
+import { documentsKeys, useCreateDocument, useDocument } from '@/src/modules/documents/hooks';
 import { useCompile } from '@/src/modules/compile/hooks';
 import { getApiErrorMessage } from '@/src/shared/api/api-error';
+import { API_URL } from '@/src/shared/config/env';
 import EditorPane from '../components/EditorPane';
 import PreviewPane from '../components/PreviewPane';
 import TopBar from '../components/TopBar';
+import type { Document as ApiDocument } from '@/src/shared/api/types';
 import type { PdfPageInfo } from '../components/PdfViewer';
 
-export interface EditorFormValues {
-  title: string;
-  content: string;
-}
+export type EditorSaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 interface EditorProps {
   documentUid: string;
@@ -37,30 +30,30 @@ function Editor({ documentUid }: EditorProps) {
   const [pageInfo, setPageInfo] = useState<PdfPageInfo>({ current: 1, total: 1 });
   const [editorWidth, setEditorWidth] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
+  const [saveState, setSaveState] = useState<EditorSaveState>('idle');
+  const [hasContent, setHasContent] = useState(false);
+  const contentRef = useRef('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   const { data, isLoading, isError } = useDocument(documentUid);
   const createDocument = useCreateDocument();
   const compile = useCompile();
 
-  const {
-    reset,
-    control,
-    setValue,
-  } = useForm<EditorFormValues>({
-    defaultValues: { title: '', content: '' },
-  });
+  const handleContentChange = useCallback((value: string) => {
+    contentRef.current = value;
+    setHasContent(Boolean(value.trim()));
+  }, []);
 
-  useEffect(() => {
-    if (data?.document) {
-      reset({
-        title: data.document.title,
-        content: data.document.content,
-      });
-    }
-  }, [data, reset]);
-
-  const content = useWatch({ control, name: 'content' });
+  const handleCompile = () => compile.mutate(contentRef.current);
 
   const changeZoom = (delta: number) =>
     setZoom((value) =>
@@ -142,10 +135,11 @@ function Editor({ documentUid }: EditorProps) {
         currentDocumentId={documentUid}
         onSelectDocument={handleSelectDocument}
         onNewDocument={handleNewDocument}
-        onCompile={() => compile.mutate(content ?? '')}
+        onCompile={handleCompile}
         isCompiling={compile.isPending}
-        hasContent={Boolean(content?.trim())}
+        hasContent={hasContent}
         pdfUrl={compile.pdfUrl}
+        saveState={saveState}
       />
       <div
         ref={containerRef}
@@ -154,11 +148,12 @@ function Editor({ documentUid }: EditorProps) {
         }`}
         style={{ '--editor-w': `${editorWidth}%` } as CSSProperties}
       >
-        <EditorPane
-          content={content ?? ''}
-          onContentChange={(value) => setValue('content', value, { shouldDirty: true })}
-          isLoading={isLoading}
-          isError={isError}
+        <DocumentEditor
+          key={documentUid}
+          documentUid={documentUid}
+          document={data?.document}
+          onContentChange={handleContentChange}
+          onSaveStateChange={setSaveState}
         />
 
         <div
@@ -182,6 +177,146 @@ function Editor({ documentUid }: EditorProps) {
         />
       </div>
     </div>
+  );
+}
+
+interface DocumentEditorProps {
+  documentUid: string;
+  document?: ApiDocument;
+  onContentChange: (value: string) => void;
+  onSaveStateChange: (state: EditorSaveState) => void;
+}
+
+function DocumentEditor({
+  documentUid,
+  document,
+  onContentChange,
+  onSaveStateChange,
+}: DocumentEditorProps) {
+  const [content, setContent] = useState('');
+  const queryClient = useQueryClient();
+
+  const mountedRef = useRef(true);
+  const hydratedRef = useRef(false);
+  const savedContentRef = useRef<string | null>(null);
+  const latestContentRef = useRef('');
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve());
+  const lastOpenedAtSentRef = useRef(false);
+
+  const emitSaveState = useCallback(
+    (state: EditorSaveState) => {
+      if (mountedRef.current) onSaveStateChange(state);
+    },
+    [onSaveStateChange],
+  );
+
+  const handleContentChange = useCallback(
+    (value: string) => {
+      setContent(value);
+      latestContentRef.current = value;
+      onContentChange(value);
+    },
+    [onContentChange],
+  );
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!document || document.id !== documentUid || hydratedRef.current) return;
+
+    hydratedRef.current = true;
+    savedContentRef.current = document.content;
+    latestContentRef.current = document.content;
+    setContent(document.content);
+    onContentChange(document.content);
+    emitSaveState('idle');
+  }, [document, documentUid, onContentChange, emitSaveState]);
+
+  const sendLatest = useCallback(async () => {
+    if (!hydratedRef.current) return;
+
+    const docId = documentUid;
+    const value = latestContentRef.current;
+    if (value === savedContentRef.current) return;
+
+    emitSaveState('saving');
+    try {
+      const { document: updated } = await documentsApi.update(docId, { content: value });
+      savedContentRef.current = value;
+      queryClient.setQueryData(documentsKeys.detail(docId), { document: updated });
+      emitSaveState(value === latestContentRef.current ? 'saved' : 'saving');
+    } catch {
+      emitSaveState('error');
+    }
+  }, [documentUid, emitSaveState, queryClient]);
+
+  const queueSave = useCallback(() => {
+    saveChainRef.current = saveChainRef.current.catch(() => {}).then(sendLatest);
+  }, [sendLatest]);
+
+  useEffect(() => {
+    if (!hydratedRef.current || content === savedContentRef.current) return;
+
+    const timer = setTimeout(() => {
+      void queueSave();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [content, queueSave]);
+
+  useEffect(() => {
+    return () => {
+      if (!hydratedRef.current) return;
+      const value = latestContentRef.current;
+      if (value === savedContentRef.current) return;
+      void documentsApi
+        .update(documentUid, { content: value })
+        .then(({ document }) => {
+          queryClient.setQueryData(documentsKeys.detail(documentUid), { document });
+        })
+        .catch(() => {});
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const flushOnUnload = () => {
+      if (!hydratedRef.current || latestContentRef.current === savedContentRef.current) return;
+
+      void fetch(`${API_URL}/documents/${encodeURIComponent(documentUid)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ content: latestContentRef.current }),
+        keepalive: true,
+      }).catch(() => {});
+    };
+
+    window.addEventListener('beforeunload', flushOnUnload);
+    return () => window.removeEventListener('beforeunload', flushOnUnload);
+  }, [documentUid]);
+
+  useEffect(() => {
+    if (!document || document.id !== documentUid || lastOpenedAtSentRef.current) return;
+
+    lastOpenedAtSentRef.current = true;
+    void documentsApi
+      .update(documentUid, { lastOpenedAt: new Date().toISOString() })
+      .catch(() => {});
+  }, [document, documentUid]);
+
+  return (
+    <EditorPane
+      content={content}
+      onContentChange={handleContentChange}
+      isLoading={false}
+      isError={false}
+    />
   );
 }
 

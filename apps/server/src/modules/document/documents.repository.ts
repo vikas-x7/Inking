@@ -1,9 +1,12 @@
 import { prisma } from '../../database/prisma.js';
 
 export const documentsRepository = {
-  listByUser(userId: string) {
+  listByUser(userId: string, search?: string) {
     return prisma.document.findMany({
-      where: { userId },
+      where: {
+        userId,
+        ...(search ? { title: { contains: search, mode: 'insensitive' } } : {}),
+      },
       orderBy: { updatedAt: 'desc' },
     });
   },
@@ -35,9 +38,14 @@ export const documentsRepository = {
       lastOpenedAt?: Date;
     },
   ) {
+    const touched = Object.keys(data).some((key) => key !== 'lastOpenedAt');
+
     return prisma.document.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        ...(touched ? { updatedAt: new Date() } : {}),
+      },
     });
   },
 

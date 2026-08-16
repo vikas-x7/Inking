@@ -18,5 +18,10 @@ export const documentIdSchema = z.object({
   documentId: z.string().min(1),
 });
 
+export const listDocumentsSchema = z.object({
+  search: z.string().trim().max(200).optional(),
+});
+
 export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>;
 export type CreateDocumentInput = z.infer<typeof createDocumentSchema>;
+export type ListDocumentsQuery = z.infer<typeof listDocumentsSchema>;

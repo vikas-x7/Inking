@@ -1,16 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { documentsApi } from './api';
 import type { UpdateDocumentInput } from './api';
 
 export const documentsKeys = {
   all: ['documents'] as const,
   detail: (id: string) => ['documents', id] as const,
+  search: (query: string) => ['documents', 'search', query] as const,
 };
 
-export function useDocuments() {
+export function useDocuments(search?: string) {
+  const query = search?.trim() ?? '';
+
   return useQuery({
-    queryKey: documentsKeys.all,
-    queryFn: documentsApi.list,
+    queryKey: query ? documentsKeys.search(query) : documentsKeys.all,
+    queryFn: () => documentsApi.list(query),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -63,7 +67,20 @@ export function useRestoreDocument() {
 
   return useMutation({
     mutationFn: (documentId: string) => documentsApi.update(documentId, { isArchived: false }),
-    onSuccess: () => {
+    onSuccess: ({ document }) => {
+      queryClient.setQueryData(documentsKeys.detail(document.id), { document });
+      queryClient.invalidateQueries({ queryKey: documentsKeys.all });
+    },
+  });
+}
+
+export function useArchiveDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (documentId: string) => documentsApi.update(documentId, { isArchived: true }),
+    onSuccess: ({ document }) => {
+      queryClient.setQueryData(documentsKeys.detail(document.id), { document });
       queryClient.invalidateQueries({ queryKey: documentsKeys.all });
     },
   });

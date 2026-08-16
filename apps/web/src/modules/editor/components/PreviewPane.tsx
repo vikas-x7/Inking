@@ -30,27 +30,27 @@ export default function PreviewPane({
               onZoomChange={onZoomChange}
               onPageInfo={onPageInfo}
             />
-            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-[#252526]/95 px-3 py-1.5 text-xs text-slate-200 shadow-lg select-none">
-              <span className="font-mono text-[11px] text-slate-300">
+            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 px-3 py-2 rounded-full border border-white/10 bg-[#252526]/95  text-xs text-slate-200 shadow-lg select-none">
+              <span className="font-mono  text-slate-300 text-[16px]">
                 {pageInfo.current}/{pageInfo.total}
               </span>
-              <span className="h-3 w-px bg-slate-600/50" />
+              <span className="h-3 w-px " />
               <button
                 onClick={() => onZoomChange(-1)}
                 disabled={zoom <= 0.5}
-                className="text-slate-300 hover:text-white disabled:opacity-30 transition"
+                className="text-slate-300 hover:text-white disabled:opacity-30 transition cursor-pointer"
                 aria-label="Zoom out"
               >
-                <FiMinus size={13} />
+                <FiMinus size={20} />
               </button>
-              <span className="font-mono text-[11px]">{Math.round(zoom * 100)}%</span>
+              <span className="font-mono text-[16px]">{Math.round(zoom * 100)}%</span>
               <button
                 onClick={() => onZoomChange(1)}
                 disabled={zoom >= 3}
-                className="text-slate-300 hover:text-white disabled:opacity-30 transition"
+                className="text-slate-300 hover:text-white disabled:opacity-30 transition cursor-pointer "
                 aria-label="Zoom in"
               >
-                <FiPlus size={13} />
+                <FiPlus size={20} />
               </button>
             </div>
           </>

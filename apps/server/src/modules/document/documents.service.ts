@@ -4,8 +4,8 @@ import { documentsRepository } from './documents.repository.js';
 import type { UpdateDocumentInput } from './documents.schema.js';
 
 export const documentsService = {
-  async listDocuments(userId: string) {
-    return documentsRepository.listByUser(userId);
+  async listDocuments(userId: string, search?: string) {
+    return documentsRepository.listByUser(userId, search);
   },
 
   async getDocument(userId: string, documentId: string) {
@@ -29,11 +29,11 @@ export const documentsService = {
     await this.getDocument(userId, documentId);
 
     return documentsRepository.update(documentId, {
-      title: data.title,
-      content: data.content,
-      description: data.description,
-      isArchived: data.isArchived,
-      lastOpenedAt: data.lastOpenedAt ? new Date(data.lastOpenedAt) : undefined,
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.content !== undefined && { content: data.content }),
+      ...(data.description !== undefined && { description: data.description }),
+      ...(data.isArchived !== undefined && { isArchived: data.isArchived }),
+      ...(data.lastOpenedAt !== undefined && { lastOpenedAt: new Date(data.lastOpenedAt) }),
     });
   },
 

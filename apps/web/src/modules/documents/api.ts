@@ -16,7 +16,12 @@ export interface UpdateDocumentInput {
 }
 
 export const documentsApi = {
-  list: async () => (await httpClient.get<{ documents: Document[] }>('/documents')).data,
+  list: async (search?: string) =>
+    (
+      await httpClient.get<{ documents: Document[] }>('/documents', {
+        params: search ? { search } : undefined,
+      })
+    ).data,
 
   get: async (documentId: string) =>
     (await httpClient.get<{ document: Document }>(`/documents/${documentId}`)).data,

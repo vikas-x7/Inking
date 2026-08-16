@@ -2,13 +2,15 @@ import type { Context } from 'hono';
 import {
   createDocumentSchema,
   documentIdSchema,
+  listDocumentsSchema,
   updateDocumentSchema,
 } from './documents.schema.js';
 import { documentsService } from './documents.service.js';
 
 export const documentsController = {
   async list(c: Context) {
-    const documents = await documentsService.listDocuments(c.get('userId'));
+    const { search } = listDocumentsSchema.parse(c.req.query());
+    const documents = await documentsService.listDocuments(c.get('userId'), search);
 
     return c.json({ documents });
   },

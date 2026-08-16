@@ -7,6 +7,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setIsOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
     const onScroll = () => {
       const heroHeight = document.getElementById('hero')?.offsetHeight ?? window.innerHeight;
@@ -35,19 +41,18 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/90">
-            <Link href="#features" className="hover:text-white transition-colors">
+            <a href="#features" onClick={(e) => handleScroll(e, 'features')} className="hover:text-white transition-colors">
               Features
-            </Link>
-            <Link href="#faq" className="hover:text-white transition-colors">
-              FAQ
-            </Link>
-               <Link href="#features" className="hover:text-white transition-colors">
+            </a>
+            <a href="#demo" onClick={(e) => handleScroll(e, 'demo')} className="hover:text-white transition-colors">
               Demo
-            </Link>
+            </a>
+            <a href="#faq" onClick={(e) => handleScroll(e, 'faq')} className="hover:text-white transition-colors">
+              FAQ
+            </a>
             <Link href="/auth" className="hover:text-white transition-colors">
               Get start
             </Link>
-         
           </div>
         </div>
         <div className="hidden md:flex items-center gap-3">
@@ -80,27 +85,27 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden mt-3 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 px-5 pt-4 pb-6 space-y-4 shadow-2xl">
           <div className="flex flex-col space-y-3 text-sm text-zinc-200">
-            <Link
+            <a
               href="#features"
               className="hover:text-white font-medium"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleScroll(e, 'features')}
             >
               Features
-            </Link>
-            <Link
+            </a>
+            <a
+              href="#demo"
+              className="hover:text-white font-medium"
+              onClick={(e) => handleScroll(e, 'demo')}
+            >
+              Demo
+            </a>
+            <a
               href="#faq"
               className="hover:text-white font-medium"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleScroll(e, 'faq')}
             >
               FAQ
-            </Link>
-            <Link
-              href="#"
-              className="hover:text-white font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
+            </a>
           </div>
           <div className="pt-4 border-t border-white/10 flex flex-col gap-2.5">
             <Link
