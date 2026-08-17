@@ -21,7 +21,7 @@ export default function Hero() {
             <Link
               href="/auth"
               id="cta-primary-btn"
-              className="group inline-flex items-center gap-2.5 rounded-3xl font-semibold bg-white text-black text-base px-7 py-3 "
+              className="group inline-flex items-center gap-2.5 rounded-3xl font-semibold tracking-[0.5px] bg-white text-black text-base px-7 py-3 "
             >
               <span>Get started free</span>
               <MdArrowOutward
@@ -30,7 +30,7 @@ export default function Hero() {
               />
             </Link>
           </div>
-          <div className="mt-14 w-full shadow-2xl overflow-hidden relative ">
+          <div id="demo" className="mt-14 w-full shadow-2xl overflow-hidden relative scroll-mt-24">
             <div className="relative ">
               <img
                 className="w-full h-auto object-cover shadow-2xl relative z-10"

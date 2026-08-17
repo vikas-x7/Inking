@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FiMenu, FiX, FiGithub, FiArrowUpRight } from 'react-icons/fi';
+import { FaGithub } from 'react-icons/fa6';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +69,8 @@ export default function Navbar() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-white hover:bg-white/90 text-black transition-all duration-150 shadow-sm"
           >
-            <FiGithub size={15} />
+            <FaGithub />
+            
             <span>GitHub</span>
             <FiArrowUpRight size={14} className="opacity-70" />
           </a>

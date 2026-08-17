@@ -24,16 +24,11 @@ export default function ErrorPage({
       <div className="flex items-center gap-3">
         <button
           onClick={reset}
-          className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90"
+          className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90 cursor-pointer"
         >
           Try again
         </button>
-        <Link
-          href="/"
-          className="rounded-full border border-white/15 px-5 py-2 text-sm font-medium text-white transition hover:bg-white/10"
-        >
-          Go home
-        </Link>
+     
       </div>
     </div>
   );

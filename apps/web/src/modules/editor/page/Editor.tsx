@@ -102,6 +102,20 @@ function Editor({ documentUid }: EditorProps) {
     );
   };
 
+  if (isMobile) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black px-8 text-center font-sans text-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/image/logo.png" alt="Inking Logo" className="h-8 w-8" />
+        <h1 className="text-2xl font-semibold">Editor is desktop-only</h1>
+        <p className="max-w-sm text-sm leading-relaxed text-white/60">
+          The Inking editor is designed for large screens. Please open it on a desktop or laptop to
+          write, preview, and export your LaTeX documents.
+        </p>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black font-sans text-white">
