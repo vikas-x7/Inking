@@ -23,9 +23,37 @@ export default function WorkspaceRedirect() {
   }, []);
 
   useEffect(() => {
-    if (isAuthLoading || !user || resolvedRef.current) return;
+    console.log('[WorkspaceRedirect]', {
+      isAuthLoading,
+      user,
+      userId: user?.id,
+      documentsIsLoading: documents.isLoading,
+      documentsIsSuccess: documents.isSuccess,
+      documentsIsError: documents.isError,
+      documentsData: documents.data,
+      documentCount: documents.data?.documents?.length,
+      resolved: resolvedRef.current,
+      createStatus: createDocument.status,
+      pathname: window.location.pathname,
+    });
 
-    if (documents.isLoading) return;
+    if (isAuthLoading) {
+      console.log('[WorkspaceRedirect] EARLY RETURN - auth loading');
+      return;
+    }
+    if (!user) {
+      console.log('[WorkspaceRedirect] EARLY RETURN - no user');
+      return;
+    }
+    if (resolvedRef.current) {
+      console.log('[WorkspaceRedirect] EARLY RETURN - already resolved');
+      return;
+    }
+
+    if (documents.isLoading) {
+      console.log('[WorkspaceRedirect] EARLY RETURN - documents loading');
+      return;
+    }
 
     const guardHardNavigation = (editorUrl: string) => {
       if (fallbackTimerRef.current !== null) {
@@ -47,6 +75,7 @@ export default function WorkspaceRedirect() {
       if (unarchived.length > 0) {
         resolvedRef.current = true;
         const editorUrl = `/editor/${unarchived[0].id}`;
+        console.log('[WorkspaceRedirect] NAVIGATING TO EXISTING', editorUrl);
         router.replace(editorUrl);
         guardHardNavigation(editorUrl);
         return;
@@ -56,15 +85,18 @@ export default function WorkspaceRedirect() {
     if (documents.isSuccess || documents.isError) {
       if (createDocument.isIdle || createDocument.isError) {
         resolvedRef.current = true;
+        console.log('[WorkspaceRedirect] CREATING NEW DOCUMENT');
         createDocument.mutate(
           { title: 'Untitled', content: '' },
           {
             onSuccess: ({ document }) => {
+              console.log('[WorkspaceRedirect] CREATE SUCCESS', { document });
               const editorUrl = `/editor/${document.id}`;
               router.replace(editorUrl);
               guardHardNavigation(editorUrl);
             },
-            onError: () => {
+            onError: (error) => {
+              console.log('[WorkspaceRedirect] CREATE ERROR', error);
               resolvedRef.current = false;
             },
           },
