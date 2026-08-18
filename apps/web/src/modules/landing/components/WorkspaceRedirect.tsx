@@ -11,11 +11,33 @@ export default function WorkspaceRedirect() {
   const documents = useDocuments();
   const createDocument = useCreateDocument();
   const resolvedRef = useRef(false);
+  const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (fallbackTimerRef.current !== null) {
+        clearTimeout(fallbackTimerRef.current);
+        fallbackTimerRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (isAuthLoading || !user || resolvedRef.current) return;
 
     if (documents.isLoading) return;
+
+    const guardHardNavigation = (editorUrl: string) => {
+      if (fallbackTimerRef.current !== null) {
+        clearTimeout(fallbackTimerRef.current);
+      }
+      fallbackTimerRef.current = setTimeout(() => {
+        fallbackTimerRef.current = null;
+        if (window.location.pathname === '/') {
+          window.location.replace(editorUrl);
+        }
+      }, 100);
+    };
 
     if (documents.isSuccess) {
       const unarchived = (documents.data?.documents ?? [])
@@ -24,7 +46,9 @@ export default function WorkspaceRedirect() {
 
       if (unarchived.length > 0) {
         resolvedRef.current = true;
-        router.replace(`/editor/${unarchived[0].id}`);
+        const editorUrl = `/editor/${unarchived[0].id}`;
+        router.replace(editorUrl);
+        guardHardNavigation(editorUrl);
         return;
       }
     }
@@ -36,7 +60,9 @@ export default function WorkspaceRedirect() {
           { title: 'Untitled', content: '' },
           {
             onSuccess: ({ document }) => {
-              router.replace(`/editor/${document.id}`);
+              const editorUrl = `/editor/${document.id}`;
+              router.replace(editorUrl);
+              guardHardNavigation(editorUrl);
             },
             onError: () => {
               resolvedRef.current = false;
