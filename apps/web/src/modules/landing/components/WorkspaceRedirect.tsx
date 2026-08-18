@@ -15,28 +15,35 @@ export default function WorkspaceRedirect() {
   useEffect(() => {
     if (isAuthLoading || !user || resolvedRef.current) return;
 
-    if (!documents.isSuccess) return;
+    if (documents.isLoading) return;
 
-    const unarchived = (documents.data.documents ?? [])
-      .filter((document) => !document.isArchived)
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    if (documents.isSuccess) {
+      const unarchived = (documents.data?.documents ?? [])
+        .filter((document) => !document.isArchived)
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
-    if (unarchived.length > 0) {
-      resolvedRef.current = true;
-      router.replace(`/editor/${unarchived[0].id}`);
-      return;
+      if (unarchived.length > 0) {
+        resolvedRef.current = true;
+        router.replace(`/editor/${unarchived[0].id}`);
+        return;
+      }
     }
 
-    if (createDocument.isIdle) {
-      resolvedRef.current = true;
-      createDocument.mutate(
-        { title: 'Untitled', content: '' },
-        {
-          onSuccess: ({ document }) => {
-            router.replace(`/editor/${document.id}`);
+    if (documents.isSuccess || documents.isError) {
+      if (createDocument.isIdle || createDocument.isError) {
+        resolvedRef.current = true;
+        createDocument.mutate(
+          { title: 'Untitled', content: '' },
+          {
+            onSuccess: ({ document }) => {
+              router.replace(`/editor/${document.id}`);
+            },
+            onError: () => {
+              resolvedRef.current = false;
+            },
           },
-        },
-      );
+        );
+      }
     }
   }, [isAuthLoading, user, documents, createDocument, router]);
 
