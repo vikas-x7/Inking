@@ -11,7 +11,7 @@ import {
 const baseCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: 'Lax',
+  sameSite: isProduction ? 'None' : 'Lax',
   path: '/',
 } as const;
 
@@ -37,12 +37,12 @@ export const clearAuthCookies = (c: Context) => {
   deleteCookie(c, AUTH_COOKIE_NAMES.accessToken, {
     path: '/',
     secure: isProduction,
-    sameSite: 'Lax',
+    sameSite: isProduction ? 'None' : 'Lax',
   });
   deleteCookie(c, AUTH_COOKIE_NAMES.refreshToken, {
     path: '/',
     secure: isProduction,
-    sameSite: 'Lax',
+    sameSite: isProduction ? 'None' : 'Lax',
   });
 };
 
@@ -59,6 +59,6 @@ export const clearOAuthCookie = (c: Context, name: string) => {
   deleteCookie(c, name, {
     path: '/',
     secure: isProduction,
-    sameSite: 'Lax',
+    sameSite: isProduction ? 'None' : 'Lax',
   });
 };
