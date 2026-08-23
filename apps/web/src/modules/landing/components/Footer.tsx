@@ -11,18 +11,16 @@ const Footer = () => {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-12 mb-16">
           {/* BRAND HEADER (LEFT START) */}
           <div className="space-y-3 col-span-2">
-            <div className='flex items-center gap-2'>
-
-            <img src="image/logo.png" alt="" className='w-6' />
-            <h2 className="text-2xl font-semibold text-white tracking-tight">Inking</h2>
+            <div className="flex items-center gap-2">
+              <img src="image/logo.png" alt="" className="w-6" />
+              <h2 className="text-2xl font-semibold text-white tracking-tight">Inking</h2>
             </div>
             <p className="text-base text-white/70 leading-relaxed max-w-xs">
               A modern LaTeX editor with live preview and PDF export. Write, compile, and share.
             </p>
           </div>
 
-
-  <div className="space-y-4">
+          <div className="space-y-4">
             <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">
               SOCIAL
             </h3>
@@ -38,7 +36,6 @@ const Footer = () => {
                   <span>GitHub</span>
                 </a>
               </li>
-           
             </ul>
           </div>
           {/* PRODUCT */}
@@ -59,12 +56,12 @@ const Footer = () => {
               </li>
               <li>
                 <Link href="#features" className="hover:text-white transition-colors">
-                See Demo
+                  See Demo
                 </Link>
               </li>
               <li>
                 <Link href="#pricing" className="hover:text-white transition-colors">
-                 Faq
+                  Faq
                 </Link>
               </li>
               <li>
@@ -76,10 +73,8 @@ const Footer = () => {
           </div>
 
           {/* RESOURCES */}
-      
 
           {/* SOCIAL */}
-        
 
           {/* THE BORING BUT NECESSARY */}
           <div className="space-y-4 col-span-2 lg:col-span-1">
@@ -108,13 +103,12 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex items-center justify-between text-xs  tracking-widest text-white/30 uppercase">
-        
           <span>© INKING 2026</span>
         </div>
 
         <div className="w-full overflow-hidden flex items-center justify-center pt-10 sm:pt-14 select-none pointer-events-none -mb-2 sm:-mb-6">
           <h1 className="text-[18vw] font-bold tracking-tighter bg-gradient-to-t from-black via-[#161616] to-[#3a3a3a] bg-clip-text text-transparent leading-[0.8] text-center uppercase translate-y-[8%]">
-            INKING
+            TRYINKING
           </h1>
         </div>
       </div>
@@ -123,4 +117,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
