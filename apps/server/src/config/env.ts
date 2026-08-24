@@ -3,7 +3,11 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  FRONTEND_URL: z.string().url().default('http://localhost:3000'),
+  FRONTEND_URL: z
+    .string()
+    .url()
+    .default('http://localhost:3000')
+    .transform((value) => value.replace(/\/+$/, '')),
   API_URL: z.string().url().default('http://localhost:3001'),
   ACCESS_JWT_SECRET: z
     .string({
