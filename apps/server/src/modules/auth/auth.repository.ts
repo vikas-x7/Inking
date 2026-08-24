@@ -28,6 +28,26 @@ export const authRepository = {
     });
   },
 
+  findMostRecentUnarchived(userId: string) {
+    return prisma.document.findFirst({
+      where: {
+        userId,
+        isArchived: false,
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+  },
+
+  createUserDocument(userId: string, title: string, content: string) {
+    return prisma.document.create({
+      data: {
+        userId,
+        title,
+        content,
+      },
+    });
+  },
+
   upsertOAuthUser(profile: OAuthProfile, tokens: OAuthTokens): Promise<AuthUser> {
     return prisma.$transaction(
       async (tx) => {

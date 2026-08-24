@@ -47,6 +47,16 @@ export const authService = {
     return { user, accessToken, refreshToken };
   },
 
+  async getOrCreateUserDocument(userId: string) {
+    const existing = await authRepository.findMostRecentUnarchived(userId);
+
+    if (existing) {
+      return existing;
+    }
+
+    return authRepository.createUserDocument(userId, 'Untitled', '');
+  },
+
   async getCurrentUser(accessToken?: string): Promise<AuthUser> {
     if (!accessToken) {
       throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);

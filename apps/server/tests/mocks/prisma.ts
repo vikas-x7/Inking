@@ -13,6 +13,7 @@ const prisma = {
   },
   document: {
     findMany: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+    findFirst: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
     findUnique: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
     create: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
     update: jest.fn<(...args: unknown[]) => Promise<unknown>>(),

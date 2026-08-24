@@ -47,11 +47,13 @@ export const authController = {
       codeVerifier,
     );
 
+    const document = await authService.getOrCreateUserDocument(user.id);
+
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.googleState);
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.googleCodeVerifier);
     setAuthCookies(c, accessToken, refreshToken);
 
-    return c.redirect(authService.getFrontendRedirectUrl());
+    return c.redirect(authService.getFrontendRedirectUrl(`/editor/${document.id}`));
   },
 
   github(c: Context) {
@@ -70,10 +72,12 @@ export const authController = {
 
     const { user, accessToken, refreshToken } = await authService.handleGithubCallback(query.code);
 
+    const document = await authService.getOrCreateUserDocument(user.id);
+
     clearOAuthCookie(c, AUTH_COOKIE_NAMES.githubState);
     setAuthCookies(c, accessToken, refreshToken);
 
-    return c.redirect(authService.getFrontendRedirectUrl());
+    return c.redirect(authService.getFrontendRedirectUrl(`/editor/${document.id}`));
   },
 
   async me(c: Context) {

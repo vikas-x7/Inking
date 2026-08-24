@@ -5,7 +5,7 @@ import { googleProvider } from './mocks/google.provider.js';
 import { githubProvider } from './mocks/github.provider.js';
 import { prisma } from './mocks/prisma.js';
 import { AppError } from '../src/shared/utils/app-error.js';
-import { accessCookie, refreshCookie, userFixture } from './helpers.js';
+import { accessCookie, documentFixture, refreshCookie, userFixture } from './helpers.js';
 
 const db = prisma;
 const googleMock = googleProvider;
@@ -38,36 +38,121 @@ describe('GET /auth/google', () => {
 });
 
 describe('GET /auth/google/callback', () => {
-  it('exchanges the code, sets auth cookies and redirects', async () => {
-    googleMock.validateCallback.mockResolvedValue({
-      profile: {
-        provider: 'google',
-        providerAccountId: 'ga-1',
-        email: userFixture.email,
-        name: userFixture.name,
-        image: userFixture.image,
-      },
-      tokens: { accessToken: 'at', refreshToken: 'rt', expiresAt: new Date() },
+  const oauthProfile = () => ({
+    profile: {
+      provider: 'google',
+      providerAccountId: 'ga-1',
+      email: userFixture.email,
+      name: userFixture.name,
+      image: userFixture.image,
+    },
+    tokens: { accessToken: 'at', refreshToken: 'rt', expiresAt: new Date() },
+  });
+
+  const oauthCookies = 'google_oauth_state=state-123; google_oauth_code_verifier=verifier-123';
+
+  const mockExistingAccount = () =>
+    db.account.findUnique.mockResolvedValue({
+      id: 'acc-1',
+      userId: userFixture.id,
+      provider: 'google',
+      providerAccountId: 'ga-1',
+      user: userFixture,
     });
-    db.user.findUnique.mockResolvedValue(null);
+
+  it('creates an Untitled document for a new user and redirects to the editor', async () => {
+    googleMock.validateCallback.mockResolvedValue(oauthProfile());
     db.account.findUnique.mockResolvedValue(null);
+    db.user.findUnique.mockResolvedValue(null);
     db.user.create.mockResolvedValue(userFixture);
+    db.document.findFirst.mockResolvedValue(null);
+    db.document.create.mockResolvedValue({ ...documentFixture, id: 'new-doc-1' });
 
     const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
-      headers: {
-        cookie: 'google_oauth_state=state-123; google_oauth_code_verifier=verifier-123',
-      },
+      headers: { cookie: oauthCookies },
     });
 
     expect(res.status).toBe(302);
-    expect(res.headers.get('location')).toContain('http://localhost:3000');
+    expect(res.headers.get('location')).toBe('http://localhost:3000/editor/new-doc-1');
+    expect(db.document.create).toHaveBeenCalledWith({
+      data: { userId: userFixture.id, title: 'Untitled', content: '' },
+    });
+  });
+
+  it('redirects an existing user to their most recent unarchived document', async () => {
+    googleMock.validateCallback.mockResolvedValue(oauthProfile());
+    mockExistingAccount();
+    db.document.findFirst.mockResolvedValue(documentFixture);
+
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
+      headers: { cookie: oauthCookies },
+    });
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get('location')).toBe('http://localhost:3000/editor/doc-1');
+    expect(db.document.findFirst).toHaveBeenCalledWith({
+      where: { userId: userFixture.id, isArchived: false },
+      orderBy: { updatedAt: 'desc' },
+    });
+  });
+
+  it('creates an Untitled document when the user has only archived documents', async () => {
+    googleMock.validateCallback.mockResolvedValue(oauthProfile());
+    mockExistingAccount();
+    db.document.findFirst.mockResolvedValue(null);
+    db.document.create.mockResolvedValue({ ...documentFixture, id: 'new-doc-1' });
+
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
+      headers: { cookie: oauthCookies },
+    });
+
+    expect(res.headers.get('location')).toBe('http://localhost:3000/editor/new-doc-1');
+    expect(db.document.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: userFixture.id, isArchived: false } }),
+    );
+    expect(db.document.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('redirects to the most recently updated document when the user has several', async () => {
+    googleMock.validateCallback.mockResolvedValue(oauthProfile());
+    mockExistingAccount();
+    db.document.findFirst.mockResolvedValue({ ...documentFixture, id: 'doc-recent' });
+
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
+      headers: { cookie: oauthCookies },
+    });
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get('location')).toBe('http://localhost:3000/editor/doc-recent');
+  });
+
+  it('sets auth cookies before redirecting to the editor', async () => {
+    googleMock.validateCallback.mockResolvedValue(oauthProfile());
+    mockExistingAccount();
+    db.document.findFirst.mockResolvedValue(documentFixture);
+    db.document.create.mockResolvedValue(documentFixture);
+
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
+      headers: { cookie: oauthCookies },
+    });
+
     const cookies = res.headers.getSetCookie().join(';');
     expect(cookies).toContain('ink_access_token=');
     expect(cookies).toContain('ink_refresh_token=');
+    expect(cookies).not.toContain('google_oauth_state=state-123');
+    expect(cookies).not.toContain('google_oauth_code_verifier=verifier-123');
   });
 
   it('returns 400 when the OAuth state does not match', async () => {
     const res = await app.request('/auth/google/callback?code=code-1&state=wrong', {
+      headers: { cookie: 'google_oauth_state=state-123' },
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when the code verifier is missing', async () => {
+    const res = await app.request('/auth/google/callback?code=code-1&state=state-123', {
       headers: { cookie: 'google_oauth_state=state-123' },
     });
 
@@ -91,7 +176,7 @@ describe('GET /auth/github', () => {
 });
 
 describe('GET /auth/github/callback', () => {
-  it('exchanges the code, sets auth cookies and redirects', async () => {
+  it('exchanges the code, sets auth cookies and redirects to the editor', async () => {
     githubMock.validateCallback.mockResolvedValue({
       profile: {
         provider: 'github',
@@ -105,12 +190,15 @@ describe('GET /auth/github/callback', () => {
     db.user.findUnique.mockResolvedValue(null);
     db.account.findUnique.mockResolvedValue(null);
     db.user.create.mockResolvedValue(userFixture);
+    db.document.findFirst.mockResolvedValue(null);
+    db.document.create.mockResolvedValue({ ...documentFixture, id: 'new-doc-1' });
 
     const res = await app.request('/auth/github/callback?code=code-1&state=state-456', {
       headers: { cookie: 'github_oauth_state=state-456' },
     });
 
     expect(res.status).toBe(302);
+    expect(res.headers.get('location')).toBe('http://localhost:3000/editor/new-doc-1');
     const cookies = res.headers.getSetCookie().join(';');
     expect(cookies).toContain('ink_access_token=');
     expect(cookies).toContain('ink_refresh_token=');
