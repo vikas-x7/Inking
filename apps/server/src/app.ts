@@ -6,10 +6,9 @@ import { errorHandler } from './shared/middleware/error.middleware.js';
 
 const app = new Hono();
 
-// In production FRONTEND_URL is the Vercel deployment URL and API_URL is the
-// Render URL, so every request from the browser is cross-origin. Allow exactly
-// that frontend origin with credentials (required for the HttpOnly cookies set
-// on the Render domain to be sent back on Vercel-initiated fetch() calls).
+// The browser only ever talks to FRONTEND_URL via the Next.js /api rewrite proxy
+// (same origin), so requests here are normally server-to-server. CORS is kept for
+// local development, where the dev frontend at :3000 talks straight to :3001.
 app.use(
   '*',
   cors({
