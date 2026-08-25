@@ -8,10 +8,14 @@ import {
   REFRESH_TOKEN_TTL_SECONDS,
 } from '../auth.constants.js';
 
+// In production the frontend (Vercel) and backend (Render) are different origins,
+// so the browser must send these cookies on cross-site fetch() calls from Vercel.
+// That requires SameSite=None + Secure. In local development everything is on
+// localhost (same site), where plain Lax cookies are sufficient.
 const baseCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: 'Lax',
+  sameSite: isProduction ? 'None' : 'Lax',
   path: '/',
 } as const;
 
@@ -34,16 +38,8 @@ export const setRefreshCookie = (c: Context, token: string) => {
 export const getRefreshCookie = (c: Context) => getCookie(c, AUTH_COOKIE_NAMES.refreshToken);
 
 export const clearAuthCookies = (c: Context) => {
-  deleteCookie(c, AUTH_COOKIE_NAMES.accessToken, {
-    path: '/',
-    secure: isProduction,
-    sameSite: 'Lax',
-  });
-  deleteCookie(c, AUTH_COOKIE_NAMES.refreshToken, {
-    path: '/',
-    secure: isProduction,
-    sameSite: 'Lax',
-  });
+  deleteCookie(c, AUTH_COOKIE_NAMES.accessToken, baseCookieOptions);
+  deleteCookie(c, AUTH_COOKIE_NAMES.refreshToken, baseCookieOptions);
 };
 
 export const setOAuthCookie = (c: Context, name: string, value: string) => {
@@ -56,9 +52,5 @@ export const setOAuthCookie = (c: Context, name: string, value: string) => {
 export const getOAuthCookie = (c: Context, name: string) => getCookie(c, name);
 
 export const clearOAuthCookie = (c: Context, name: string) => {
-  deleteCookie(c, name, {
-    path: '/',
-    secure: isProduction,
-    sameSite: 'Lax',
-  });
+  deleteCookie(c, name, baseCookieOptions);
 };

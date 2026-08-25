@@ -14,7 +14,7 @@ const getGithubClient = () => {
   return new GitHub(
     env.GITHUB_CLIENT_ID,
     env.GITHUB_CLIENT_SECRET,
-    `${env.FRONTEND_URL}/api/auth/github/callback`,
+    `${env.API_URL}/auth/github/callback`,
   );
 };
 
