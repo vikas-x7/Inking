@@ -14,7 +14,7 @@ const getGoogleClient = () => {
   return new Google(
     env.GOOGLE_CLIENT_ID,
     env.GOOGLE_CLIENT_SECRET,
-    `${env.FRONTEND_URL}/api/auth/google/callback`,
+    `${env.API_URL}/auth/google/callback`,
   );
 };
 

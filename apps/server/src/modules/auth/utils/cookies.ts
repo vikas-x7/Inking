@@ -8,14 +8,16 @@ import {
   REFRESH_TOKEN_TTL_SECONDS,
 } from '../auth.constants.js';
 
-// All auth traffic goes through the Next.js rewrite proxy, so cookies are
-// always set on the frontend origin (vercel.app / localhost). Same-site Lax
-// is enough — do NOT use SameSite=None here (third-party cookies get blocked
-// by Safari/Chrome tracking protection and break the editor's API calls).
+// Cronix-style cross-site cookie auth: the frontend (Vercel) and backend (Render)
+// are different sites, and the browser calls the backend DIRECTLY (no proxy).
+// Cookies stay host-only on the backend domain (no Domain attribute), so in
+// production they must be SameSite=None + Secure for the browser to send them on
+// cross-site fetch(). Locally, localhost:3000 -> localhost:3001 is same-site,
+// where plain Lax cookies are sufficient.
 const baseCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: 'Lax',
+  sameSite: isProduction ? 'None' : 'Lax',
   path: '/',
 } as const;
 

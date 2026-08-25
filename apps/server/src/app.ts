@@ -6,9 +6,10 @@ import { errorHandler } from './shared/middleware/error.middleware.js';
 
 const app = new Hono();
 
-// The browser only ever talks to FRONTEND_URL via the Next.js /api rewrite proxy
-// (same origin), so requests here are normally server-to-server. CORS is kept for
-// local development, where the dev frontend at :3000 talks straight to :3001.
+// Cronix-style cross-origin setup: the browser calls this API DIRECTLY from the
+// Vercel frontend. FRONTEND_URL (the Vercel origin) is the only allowed origin,
+// and credentials:true is required so the SameSite=None cookies set on this
+// (Render) domain are sent back on those cross-site fetch() calls.
 app.use(
   '*',
   cors({
