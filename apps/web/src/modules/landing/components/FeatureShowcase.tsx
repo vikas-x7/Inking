@@ -15,13 +15,11 @@ interface TextBlockProps {
 function TextBlock({ eyebrow, title, description, descClass, cta, href }: TextBlockProps) {
   return (
     <div className="max-w-md">
-      <span className="text-gray-400 text-sm sm:text-base font-normal block mb-2">
-        {eyebrow}
-      </span>
-      <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-semibold  text-white ">
-        {title}
-      </h2>
-      <p className={`text-white/50 text-sm sm:text-base font-normal mt-4 leading-relaxed ${descClass ?? 'max-w-sm'}`}>
+      <span className="text-gray-400 text-sm sm:text-base font-normal block mb-2">{eyebrow}</span>
+      <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-semibold  text-white ">{title}</h2>
+      <p
+        className={`text-white/50 text-sm sm:text-base font-normal mt-4 leading-relaxed ${descClass ?? 'max-w-sm'}`}
+      >
         {description}
       </p>
       <Link
@@ -69,8 +67,18 @@ function WorkspaceCard() {
 
       <div className="space-y-2.5 pt-4">
         <div className="flex items-center gap-3 text-gray-900 text-sm sm:text-[15px] font-medium">
-          <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          <svg
+            className="w-5 h-5 text-gray-800"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+            />
           </svg>
           <span>102 Packages</span>
         </div>
@@ -82,16 +90,6 @@ function WorkspaceCard() {
           <span>25 Equations</span>
         </div>
       </div>
-    </div>
-  );
-}
-
-function CompilerCard() {
-  return (
-    <div className="bg-white rounded-[24px] px-10 py-10 sm:px-14 sm:py-12 shadow-[0_12px_40px_rgba(0,0,0,0.06)] w-full max-w-[380px] flex items-center justify-center transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
-      <span className="text-gray-900 font-semibold text-2xl sm:text-3xl tracking-[0.1em] text-center select-none">
-        LATEX ONLINE
-      </span>
     </div>
   );
 }
@@ -118,7 +116,13 @@ function AssistantCard() {
 
       <div className="border-[1.5px] border-dashed border-gray-300 rounded-[14px] p-4 sm:p-5 relative flex items-center justify-center my-3 bg-gray-50/40 min-h-[96px] overflow-visible">
         <div className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center text-gray-400 bg-white">
-          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
         </div>
@@ -191,23 +195,6 @@ const sections: Section[] = [
     Visual: WorkspaceCard,
   },
   {
-    eyebrow: 'Compiler',
-    title: (
-      <>
-        Instant Compilation, <br /> Publication Results
-      </>
-    ),
-    description:
-      'Compile complex TeX documents instantly in your browser with real-time error diagnostics and publication-ready PDF output.',
-    descClass: 'max-w-md',
-    cta: 'Explore Compiler',
-    href: '/auth',
-    visualBg: 'bg-[#D3E1DE]',
-    rootClass: 'min-h-[460px] lg:min-h-[520px]',
-    Visual: CompilerCard,
-    reverse: true,
-  },
-  {
     eyebrow: 'Assistant',
     title: 'Tailored for Academics',
     description:
@@ -217,6 +204,7 @@ const sections: Section[] = [
     visualBg: 'bg-[#E5DCDD]',
     rootClass: 'min-h-[460px] lg:min-h-[520px]',
     Visual: AssistantCard,
+    reverse: true,
   },
 ];
 
@@ -224,23 +212,43 @@ export default function FeatureShowcase() {
   return (
     <section className="w-full bg-black text-white font-sans overflow-hidden my-50">
       <div className="w-6xl mx-auto space-y-20">
-        {sections.map(({ eyebrow, title, description, descClass, cta, href, visualBg, rootClass, Visual, reverse }, i) => (
-          <div key={i} className={`grid grid-cols-1 lg:grid-cols-2 ${rootClass} w-full`}>
-            <div className={`${visualBg} p-8 sm:p-12 md:p-16 flex items-center justify-center relative overflow-hidden ${reverse ? 'order-1 lg:order-2' : ''}`}>
-              <Visual />
+        {sections.map(
+          (
+            {
+              eyebrow,
+              title,
+              description,
+              descClass,
+              cta,
+              href,
+              visualBg,
+              rootClass,
+              Visual,
+              reverse,
+            },
+            i,
+          ) => (
+            <div key={i} className={`grid grid-cols-1 lg:grid-cols-2 ${rootClass} w-full`}>
+              <div
+                className={`${visualBg} p-8 sm:p-12 md:p-16 flex items-center justify-center relative overflow-hidden ${reverse ? 'order-1 lg:order-2' : ''}`}
+              >
+                <Visual />
+              </div>
+              <div
+                className={`bg-[#141414] p-8 sm:p-12 md:p-16 flex flex-col justify-center text-white ${reverse ? 'order-2 lg:order-1' : ''}`}
+              >
+                <TextBlock
+                  eyebrow={eyebrow}
+                  title={title}
+                  description={description}
+                  descClass={descClass}
+                  cta={cta}
+                  href={href}
+                />
+              </div>
             </div>
-            <div className={`bg-[#141414] p-8 sm:p-12 md:p-16 flex flex-col justify-center text-white ${reverse ? 'order-2 lg:order-1' : ''}`}>
-              <TextBlock
-                eyebrow={eyebrow}
-                title={title}
-                description={description}
-                descClass={descClass}
-                cta={cta}
-                href={href}
-              />
-            </div>
-          </div>
-        ))}
+          ),
+        )}
       </div>
     </section>
   );

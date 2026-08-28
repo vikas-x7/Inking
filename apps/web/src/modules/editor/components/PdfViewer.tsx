@@ -12,6 +12,7 @@ const loadPdfJs = () =>
 
 const PAGE_GAP = 10;
 const TOP_PAD = 12;
+const ZOOM_WHEEL_ACCUM = 36;
 
 export interface PdfPageInfo {
   current: number;
@@ -34,6 +35,7 @@ export default function PdfViewer({ pdfUrl, zoom, onZoomChange, onPageInfo }: Pd
   const pageHeightsRef = useRef<number[]>([]);
   const onPageInfoRef = useRef(onPageInfo);
   const onZoomChangeRef = useRef(onZoomChange);
+  const wheelAccumulatorRef = useRef(0);
 
   useEffect(() => {
     onPageInfoRef.current = onPageInfo;
@@ -50,7 +52,21 @@ export default function PdfViewer({ pdfUrl, zoom, onZoomChange, onPageInfo }: Pd
     const onWheel = (event: WheelEvent) => {
       if (!event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
-      onZoomChangeRef.current?.(event.deltaY > 0 ? -1 : 1);
+
+      const step =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? event.deltaY * 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? event.deltaY * 100
+            : event.deltaY;
+
+      wheelAccumulatorRef.current += step;
+
+      while (Math.abs(wheelAccumulatorRef.current) >= ZOOM_WHEEL_ACCUM) {
+        onZoomChangeRef.current?.(Math.sign(wheelAccumulatorRef.current));
+        wheelAccumulatorRef.current -=
+          Math.sign(wheelAccumulatorRef.current) * ZOOM_WHEEL_ACCUM;
+      }
     };
 
     scroll.addEventListener('wheel', onWheel, { passive: false });

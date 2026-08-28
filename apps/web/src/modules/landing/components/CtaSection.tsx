@@ -6,9 +6,11 @@ import { MdArrowOutward } from 'react-icons/md';
 
 const CtaSection = () => {
   return (
-    <section className="w-full bg-black py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="max-w-4xl mx-auto relative">
-        <div className="relative  backdrop-blur-sm px-8 py-16 sm:px-16 sm:py-20 text-center overflow-hidden">
+    <section className="relative w-full bg-black py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="relative max-w-4xl mx-auto">
+        <div className="relative  px-8 py-16 sm:px-16 sm:py-20 text-center overflow-hidden">
           <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-5">
             Start writing better <span>LaTeX</span> today
           </h2>

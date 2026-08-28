@@ -61,5 +61,5 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
     }
   }, [value]);
 
-  return <div ref={containerRef} className="h-full w-full overflow-hidden" />;
+  return <div ref={containerRef} className="h-full w-full overflow-hidden " />;
 }

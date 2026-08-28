@@ -1,9 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { FiDownload, FiLogOut, FiUser } from 'react-icons/fi';
+import { FiLogOut, FiUser } from 'react-icons/fi';
 import { useAuth, useLogout } from '@/src/modules/auth/hooks';
 import DocumentPicker from './DocumentPicker';
-import { MdOutlineAutorenew } from 'react-icons/md';
 import type { EditorSaveState } from '../page/Editor';
 
 interface TopBarProps {
@@ -53,65 +52,43 @@ export default function TopBar({
     link.click();
   };
 
+  const actions: Array<{ label: string; onClick?: () => void; disabled?: boolean; alwaysVisible?: boolean }> = [
+    { label: 'Files', onClick: () => setIsPickerOpen(true), alwaysVisible: true },
+    { label: 'Archive' },
+    { label: 'Layout' },
+    { label: 'New File' },
+    
+    { label: 'Help' },
+    { label: 'Download', onClick: handleDownloadPdf, disabled: !pdfUrl },
+  ];
+
   return (
-    <header className="flex h- shrink-0 items-center justify-between border-b border-white/5 bg-[#252526] px-2 py-1 text-white select-none">
-
+    <header className="flex h- shrink-0 items-center justify-between border-b border-white/5 bg-[#252526] px-2  text-white select-none">
       <div className="flex items-center  overflow-x-auto gap-x-1 scrollbar-none ">
-
         <div className="flex">
-          <img
-            src="/image/logo.png"
-            alt="Inking Logo"
-            className=" w-5  "
-          />
-
+          <img src="/image/logo.png" alt="Inking Logo" className=" w-5  " />
         </div>
-
-        <p className='ml-[-1px] font-bold mr-5'>  Inking</p>
-
-
-        <button
-          onClick={() => setIsPickerOpen(true)}
-          className="flex shrink-0 items-center gap-1 rounded-[2px] px-1.5 py-[0.7px] text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5"
-        >
-          <span className='text-[15px]'>All Document</span>
-
-        </button>
-
-        <button
-          onClick={handleDownloadPdf}
-          disabled={!pdfUrl}
-          className="flex shrink-0 items-center gap-1.5 rounded-[2px] px-1.5 py-[0.7px]  text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Download PDF"
-          title="Download PDF"
-        >
-          <FiDownload size={14} />
-          <span className='text-[15px] hidden sm:inline'>Download</span>
-        </button>
-
-
+        <p className="ml-[-2px] font-medium mr-5"> Inking</p>
+        {actions.map(({ label, onClick, disabled, alwaysVisible }) => (
+          <button
+            key={label}
+            onClick={onClick}
+            disabled={disabled}
+            className="flex shrink-0 items-center gap-1.5 rounded-[2px] px-1.5 py-[0.7px] text-xs font-medium text-slate-200 transition cursor-pointer hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <span className={`text-[15px] ${alwaysVisible ? '' : 'hidden sm:inline'}`}>{label}</span>
+          </button>
+        ))}
         <button
           onClick={onCompile}
           disabled={isCompiling || !hasContent}
           className="flex items-center gap-1.5 rounded-[2px] px-1.5 py-[0.7px]  font-medium text-white transition shadow-sm disabled:opacity-50"
         >
-          <MdOutlineAutorenew size={13} className={isCompiling ? 'animate-spin' : ''} />
-
           <span>{isCompiling ? 'Compiling...' : 'Compile'}</span>
         </button>
-
-
-
-
-
-
-
-
       </div>
 
-
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 pl-2">
-        {/* Save State Indicator */}
         {saveState !== 'idle' && (
           <span
             className={[
@@ -123,17 +100,6 @@ export default function TopBar({
           </span>
         )}
 
-        {/* Compile Button (MOVED UP) */}
-
-
-
-        {/* Upgrade Button */}
-
-
-        {/* Help Button */}
-
-
-        {/* User Profile Avatar */}
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -149,7 +115,6 @@ export default function TopBar({
                 {user?.name?.[0]?.toUpperCase() ?? <FiUser size={13} />}
               </div>
             )}
-
           </button>
 
           {showUserMenu && user && (

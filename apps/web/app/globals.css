@@ -23,3 +23,15 @@
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(currentColor 0 0) 0 0/0% 100% no-repeat;
+  animation: loading-bar 2s linear infinite;
+}
+
+@keyframes loading-bar {
+  to {
+    background-size: 100% 100%;
+  }
+}

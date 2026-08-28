@@ -5,15 +5,16 @@ import FeatureShowcase from '@/src/modules/landing/components/FeatureShowcase';
 import Footer from '../components/Footer';
 import Faq from '../components/Faq';
 import CtaSection from '../components/CtaSection';
+import QuerySection from '../components/QuerySection';
 
 function Landing() {
   return (
     <section className="bg-[#000000]">
       <Navbar />
       <Hero />
-     
       <Features />
-       <FeatureShowcase />
+       <QuerySection />
+      <FeatureShowcase />
       <Faq />
       <CtaSection />
       <Footer />
@@ -22,3 +23,4 @@ function Landing() {
 }
 
 export default Landing;
+

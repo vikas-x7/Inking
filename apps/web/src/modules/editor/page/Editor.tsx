@@ -22,7 +22,7 @@ interface EditorProps {
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
-const ZOOM_STEP = 0.1;
+const ZOOM_STEP = 0.05;
 
 function Editor({ documentUid }: EditorProps) {
   const router = useRouter();
@@ -119,11 +119,14 @@ function Editor({ documentUid }: EditorProps) {
   if (isLoading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black font-sans text-white">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        
         <img src="/image/logo.png" alt="Inking Logo" className="h-7 w-7" />
-        <div className="flex items-center gap-2 text-white/50">
-          <FiLoader size={20} className="animate-spin" />
-          <span className="text-sm">Loading your document...</span>
+        <div className="flex flex-col items-center gap-3 text-white/50">
+          <div className="flex items-center gap-2">
+          
+            <span className="text-sm">Loading your document...</span>
+          </div>
+          <div className="loading-bar w-40" />
         </div>
       </div>
     );
