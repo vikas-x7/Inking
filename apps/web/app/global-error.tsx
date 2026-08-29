@@ -4,7 +4,6 @@ import Image from 'next/image';
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -24,8 +23,8 @@ export default function GlobalError({
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={reset}
-              className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90"
+              onClick={() => window.location.reload()}
+              className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90 cursor-pointer"
             >
               Try again
             </button>

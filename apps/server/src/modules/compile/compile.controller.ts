@@ -8,7 +8,23 @@ const renderCompileResult = async (c: Context, text: string) => {
   const result = await compileService.compile(text);
 
   if (!result.ok) {
-    return c.text(result.error, 400);
+    if (result.structured) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            type: result.structured.type,
+            message: result.structured.message,
+            file: result.structured.file,
+            line: result.structured.line,
+            column: result.structured.column,
+          },
+        },
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    return c.text(result.error, HTTP_STATUS.BAD_REQUEST);
   }
 
   return new Response(result.pdf, {

@@ -25,6 +25,7 @@ import type { Document } from '@/src/shared/api/types';
 
 interface DocumentPickerProps {
   open: boolean;
+  initialView?: 'active' | 'archived';
   onClose: () => void;
   onSelect: (documentId: string) => void;
   onNewDocument: () => void;
@@ -81,6 +82,7 @@ const formatDateDisplay = (dateString?: string | null) => {
 
 export default function DocumentPicker({
   open,
+  initialView = 'active',
   onClose,
   onSelect,
   onNewDocument,
@@ -88,7 +90,7 @@ export default function DocumentPicker({
 }: DocumentPickerProps) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [view, setView] = useState<'active' | 'archived'>('active');
+  const [view, setView] = useState<'active' | 'archived'>(initialView);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [renameDocumentId, setRenameDocumentId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');

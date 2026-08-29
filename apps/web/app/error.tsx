@@ -1,11 +1,9 @@
 'use client';
 import { useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 
 export default function ErrorPage({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -23,7 +21,7 @@ export default function ErrorPage({
       </div>
       <div className="flex items-center gap-3">
         <button
-          onClick={reset}
+          onClick={() => window.location.reload()}
           className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-white/90 cursor-pointer"
         >
           Try again

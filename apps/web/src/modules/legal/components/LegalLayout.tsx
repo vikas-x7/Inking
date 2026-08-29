@@ -15,15 +15,17 @@ export default function LegalLayout({ title, lastUpdated, children }: LegalLayou
       {/* Header / Nav */}
       <header className="w-full border-b border-white/10  py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight text-white hover:opacity-80 transition">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:opacity-80 transition">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/image/logo.png" alt="Inking Logo" className="h-6 w-6" />
             Inking
           </Link>
-          <Link
-            href="/"
-            className="text-xs font-semibold px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          <button
+            onClick={() => window.history.back()}
+            className="text-[17px] px-4 py-1.5 rounded-[4px] bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
           >
-            Back to Home
-          </Link>
+            Back
+          </button>
         </div>
       </header>
 

@@ -38,6 +38,199 @@ describe('GET /compile', () => {
     expect(await res.text()).toContain('LaTeX Error');
   });
 
+  it('preserves the compiler structured error (type, message, file, line, column)', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'undefined_control_sequence',
+            message: "Undefined command '\\helloWorld'.",
+            file: 'main.tex',
+            line: 6,
+            column: null,
+          },
+          log: 'pdflatex ...\nmain.tex:6: error: Undefined control sequence\n',
+        }),
+        {
+          status: 400,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        },
+      ),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=broken');
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('application/json');
+    const body = await res.json();
+
+    expect(body).toEqual({
+      success: false,
+      error: {
+        type: 'undefined_control_sequence',
+        message: "Undefined command '\\helloWorld'.",
+        file: 'main.tex',
+        line: 6,
+        column: null,
+      },
+    });
+  });
+
+  it('preserves a missing-file structured error', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'missing_file',
+            message: "File 'missing.png' not found.",
+            file: 'main.tex',
+            line: 4,
+            column: null,
+          },
+        }),
+        {
+          status: 400,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        },
+      ),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=%5Cincludegraphics%7Bmissing.png%7D');
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: { type: string; line: number; file: string } };
+
+    expect(body.error.type).toBe('missing_file');
+    expect(body.error.message).toContain('missing.png');
+    expect(body.error.file).toBe('main.tex');
+    expect(body.error.line).toBe(4);
+  });
+
+  it('preserves a missing-package structured error', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'missing_package',
+            message: "Package 'nonexistent' not found.",
+            file: 'main.tex',
+            line: 1,
+            column: null,
+          },
+        }),
+        {
+          status: 400,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        },
+      ),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=%5Cusepackage%7Bnonexistent%7D');
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: { type: string; message: string } };
+
+    expect(body.error.type).toBe('missing_package');
+    expect(body.error.message).toContain('nonexistent');
+  });
+
+  it('preserves a generic compilation_error structured error', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'compilation_error',
+            message: 'TeX capacity exceeded, sorry [...].',
+            file: null,
+            line: null,
+            column: null,
+          },
+        }),
+        {
+          status: 400,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        },
+      ),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=broken');
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: { type: string; message: string } };
+
+    expect(body.error.type).toBe('compilation_error');
+    expect(body.error.message).toContain('TeX capacity exceeded');
+  });
+
+  it('does not treat a JSON-shaped body served as text/plain as a structured error', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: { type: 'undefined_control_sequence', message: 'should stay plain' },
+        }),
+        {
+          status: 400,
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        },
+      ),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=broken');
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('text/plain');
+    expect(await res.text()).toContain('should stay plain');
+  });
+
+  it('fails gracefully on malformed JSON from the compiler', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response('this is not json {', {
+        status: 400,
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=broken');
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('text/plain');
+    expect(await res.text()).toBe('this is not json {');
+  });
+
+  it('returns an unexpected structured-ish JSON failure as plain text when unsuccessful flag is missing', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response(JSON.stringify({ error: { type: 'x', message: 'ignored' } }), {
+        status: 400,
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=broken');
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('text/plain');
+    expect(await res.text()).toContain('"message":"ignored"');
+  });
+
+  it('passes through a plain-text compiler failure untouched', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response('Compiler is busy, please retry later.', {
+        status: 503,
+        headers: { 'content-type': 'text/plain' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=hello');
+
+    expect(res.status).toBe(400);
+    expect(await res.text()).toBe('Compiler is busy, please retry later.');
+  });
+
   it('returns 500 when the compiler is unreachable', async () => {
     globalThis.fetch = mockFetch().mockRejectedValue(
       new TypeError('fetch failed'),

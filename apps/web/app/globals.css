@@ -35,3 +35,8 @@
     background-size: 100% 100%;
   }
 }
+
+.cm-error-line {
+  background-color: rgba(248, 113, 113, 0.14);
+  box-shadow: inset 3px 0 0 #f87171;
+}

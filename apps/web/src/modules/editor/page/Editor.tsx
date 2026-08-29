@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { FiLoader } from 'react-icons/fi';
 import { documentsApi } from '@/src/modules/documents/api';
 import { documentsKeys, useCreateDocument, useDocument } from '@/src/modules/documents/hooks';
-import { useCompile } from '@/src/modules/compile/hooks';
+import { useCompile, resolveCompileError } from '@/src/modules/compile/hooks';
 import { getApiErrorMessage } from '@/src/shared/api/api-error';
 import { API_URL } from '@/src/shared/config/env';
 import EditorPane from '../components/EditorPane';
@@ -28,6 +28,7 @@ function Editor({ documentUid }: EditorProps) {
   const router = useRouter();
   const [zoom, setZoom] = useState(1);
   const [pageInfo, setPageInfo] = useState<PdfPageInfo>({ current: 1, total: 1 });
+  const [layoutMode, setLayoutMode] = useState<'split' | 'editor' | 'pdf'>('split');
   const [editorWidth, setEditorWidth] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
   const [saveState, setSaveState] = useState<EditorSaveState>('idle');
@@ -54,6 +55,18 @@ function Editor({ documentUid }: EditorProps) {
   }, []);
 
   const handleCompile = () => compile.mutate(contentRef.current);
+
+  const compileError = compile.error
+    ? (resolveCompileError(compile.error) ?? {
+        type: 'unknown',
+        message: getApiErrorMessage(compile.error),
+        file: null,
+        line: null,
+        column: null,
+      })
+    : null;
+
+  const errorLine = compileError?.line ?? null;
 
   const changeZoom = (delta: number) =>
     setZoom((value) =>
@@ -119,11 +132,9 @@ function Editor({ documentUid }: EditorProps) {
   if (isLoading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-5 bg-black font-sans text-white">
-        
         <img src="/image/logo.png" alt="Inking Logo" className="h-7 w-7" />
         <div className="flex flex-col items-center gap-3 text-white/50">
           <div className="flex items-center gap-2">
-          
             <span className="text-sm">Loading your document...</span>
           </div>
           <div className="loading-bar w-40" />
@@ -157,6 +168,8 @@ function Editor({ documentUid }: EditorProps) {
         hasContent={hasContent}
         pdfUrl={compile.pdfUrl}
         saveState={saveState}
+        layoutMode={layoutMode}
+        onLayoutModeChange={setLayoutMode}
       />
       <div
         ref={containerRef}
@@ -165,33 +178,56 @@ function Editor({ documentUid }: EditorProps) {
         }`}
         style={{ '--editor-w': `${editorWidth}%` } as CSSProperties}
       >
-        <DocumentEditor
-          key={documentUid}
-          documentUid={documentUid}
-          document={data?.document}
-          onContentChange={handleContentChange}
-          onSaveStateChange={setSaveState}
-        />
-
         <div
-          onMouseDown={startResize}
-          onDoubleClick={() => setEditorWidth(50)}
-          role="separator"
-          aria-orientation="vertical"
-          title="Drag to resize"
-          className="hidden lg:flex relative w-1.5 shrink-0 cursor-col-resize items-stretch bg-[#1E1E1E] hover:bg-[#0055D6] active:bg-[#0055D6] transition-colors"
+          className={
+            layoutMode === 'pdf'
+              ? 'hidden'
+              : layoutMode === 'editor'
+                ? 'h-full w-full min-w-0 flex-1'
+                : 'h-full w-full min-w-0 lg:w-[var(--editor-w)]'
+          }
         >
-          <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10 pointer-events-none" />
+          <DocumentEditor
+            key={documentUid}
+            documentUid={documentUid}
+            document={data?.document}
+            onContentChange={handleContentChange}
+            onSaveStateChange={setSaveState}
+            errorLine={errorLine}
+          />
         </div>
 
-        <PreviewPane
-          zoom={zoom}
-          onZoomChange={(delta) => changeZoom(delta * ZOOM_STEP)}
-          onPageInfo={setPageInfo}
-          pageInfo={pageInfo}
-          pdfUrl={compile.pdfUrl}
-          compileError={compile.error ? getApiErrorMessage(compile.error) : null}
-        />
+        {layoutMode === 'split' && (
+          <div
+            onMouseDown={startResize}
+            onDoubleClick={() => setEditorWidth(50)}
+            role="separator"
+            aria-orientation="vertical"
+            title="Drag to resize"
+            className="hidden lg:flex relative w-1.5 shrink-0 cursor-col-resize items-stretch bg-[#1E1E1E] hover:bg-[#0055D6] active:bg-[#0055D6] transition-colors"
+          >
+            <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10 pointer-events-none" />
+          </div>
+        )}
+
+        <div
+          className={
+            layoutMode === 'editor'
+              ? 'hidden'
+              : layoutMode === 'pdf'
+                ? 'h-full w-full min-w-0 flex-1'
+                : 'h-full w-full min-w-0 lg:w-[calc(100%-var(--editor-w))]'
+          }
+        >
+          <PreviewPane
+            zoom={zoom}
+            onZoomChange={(delta) => changeZoom(delta * ZOOM_STEP)}
+            onPageInfo={setPageInfo}
+            pageInfo={pageInfo}
+            pdfUrl={compile.pdfUrl}
+            compileError={compileError}
+          />
+        </div>
       </div>
     </div>
   );
@@ -202,6 +238,7 @@ interface DocumentEditorProps {
   document?: ApiDocument;
   onContentChange: (value: string) => void;
   onSaveStateChange: (state: EditorSaveState) => void;
+  errorLine: number | null;
 }
 
 function DocumentEditor({
@@ -209,6 +246,7 @@ function DocumentEditor({
   document,
   onContentChange,
   onSaveStateChange,
+  errorLine,
 }: DocumentEditorProps) {
   const [content, setContent] = useState('');
   const queryClient = useQueryClient();
@@ -333,6 +371,7 @@ function DocumentEditor({
       onContentChange={handleContentChange}
       isLoading={false}
       isError={false}
+      errorLine={errorLine}
     />
   );
 }
