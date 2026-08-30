@@ -47,7 +47,7 @@ export default function Signup() {
             <div className="flex flex-col gap-3 w-full">
               <button
                 onClick={() => redirectToProvider(authApi.googleUrl)}
-                className="w-full flex items-center justify-center gap-3 py-2 px-2 rounded-[3px] bg-white text-sm font-medium hover:bg-gray-50 transition-all cursor-pointer text-black"
+                className="w-full flex items-center justify-center gap-3 py-2 px-2 rounded-[3px] bg-[#282828]  text-white text-sm font-medium hover:bg-[#282828]  transition-all cursor-pointer "
               >
                 <FcGoogle className="text-lg" />
                 <span>Continue with Google</span>
@@ -55,7 +55,7 @@ export default function Signup() {
 
               <button
                 onClick={() => redirectToProvider(authApi.githubUrl)}
-                className="w-full flex items-center justify-center gap-3 py-2 px-4 rounded-[3px] bg-white text-sm font-medium hover:bg-gray-50 transition-all cursor-pointer text-black"
+                className="w-full flex items-center justify-center gap-3 py-2 px-4 rounded-[3px] bg-[#282828]  text-white text-sm font-medium transition-all cursor-pointer "
               >
                 <FaGithub className="text-lg" />
                 <span>Continue with GitHub</span>

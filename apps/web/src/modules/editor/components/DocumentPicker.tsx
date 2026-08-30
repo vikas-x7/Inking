@@ -199,7 +199,7 @@ export default function DocumentPicker({
       onClick={onClose}
     >
       <div
-        className="flex h-[580px] max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-[#252526] border border-white/10 shadow-2xl text-white font-sans"
+        className="flex h-[580px] max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[5px] bg-[#121212]  shadow-2xl text-white font-sans"
         onClick={(event) => event.stopPropagation()}
       >
         {/* ── Top Bar / Header ── */}
@@ -217,11 +217,24 @@ export default function DocumentPicker({
               />
             </div>
 
+            <button
+              onClick={onNewDocument}
+              className="flex items-center gap-1.5 rounded-[3px] cursor-pointer bg-white  px-3.5 py-1.5  text-xs  text-black transition shadow-sm"
+            >
+              <FiPlus size={15} />
+              <span>New</span>
+            </button>
+
             {/* View Toggle */}
-            <div className="flex items-center gap-1 rounded-lg border border-white/5 bg-black/40 p-0.5">
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* New Document Button */}
+
+            <div className="flex items-center gap-1 rounded-[5px] border border-white/5 bg-black/40 p-0.5">
               <button
                 onClick={() => setView('active')}
-                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
+                className={`flex items-center gap-1.5 rounded-[5px] px-2.5 py-1.5 text-xs font-medium transition ${
                   view === 'active' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
                 }`}
               >
@@ -230,7 +243,7 @@ export default function DocumentPicker({
               </button>
               <button
                 onClick={() => setView('archived')}
-                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
+                className={`flex items-center gap-1.5 rounded-[5px] px-2.5 py-1.5 text-xs font-medium transition ${
                   view === 'archived' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
                 }`}
               >
@@ -238,26 +251,15 @@ export default function DocumentPicker({
                 Archived
               </button>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* New Document Button */}
-            <button
-              onClick={onNewDocument}
-              className="flex items-center gap-1.5 rounded-lg bg-black hover:bg-[#0055D6] px-3.5 py-2 text-xs font-medium text-white transition shadow-sm"
-            >
-              <FiPlus size={15} />
-              <span>New</span>
-            </button>
 
             {/* Close Button */}
-            <button
+            {/* <button
               onClick={onClose}
               className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition"
               aria-label="Close"
             >
               <FiX size={20} />
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -305,10 +307,10 @@ export default function DocumentPicker({
                     <div
                       key={document.id}
                       onClick={() => onSelect(document.id)}
-                      className={`group relative grid grid-cols-12 items-center gap-4 rounded-lg px-4 py-3.5 text-sm transition-colors cursor-pointer ${
+                      className={`group relative grid grid-cols-12 items-center gap-4 rounded-[3px] px-4 py-1 text-sm transition-colors cursor-pointer ${
                         active
-                          ? 'bg-[#2F3542] text-white font-medium shadow-sm'
-                          : 'hover:bg-[#2A2E39] text-slate-200'
+                          ? 'bg-[#242424] text-white font-medium shadow-sm'
+                          : 'hover:bg-[#252525] text-slate-200'
                       }`}
                     >
                       {/* Name Column */}
@@ -355,7 +357,7 @@ export default function DocumentPicker({
                             if (renameDocumentId) cancelRename();
                             setActiveMenuId(activeMenuId === document.id ? null : document.id);
                           }}
-                          className="p-1 rounded text-white/70 hover:text-white hover:bg-white/10 transition"
+                          className="p-1 rounded text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer"
                           title="Options"
                         >
                           <FiMoreVertical size={18} />
@@ -364,7 +366,7 @@ export default function DocumentPicker({
                         {/* Options Dropdown */}
                         {activeMenuId === document.id && (
                           <div
-                            className="absolute right-0 top-8 z-20 w-36 rounded-lg bg-[#1B1E25] border border-white/10 p-1 shadow-xl"
+                            className="absolute right-0 top-8 z-20 w-36 rounded-[5px] bg-[#252526] p-1 shadow-xl"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {view === 'active' && (
@@ -374,7 +376,7 @@ export default function DocumentPicker({
                                     e.stopPropagation();
                                     startRename(document);
                                   }}
-                                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition"
+                                  className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition"
                                 >
                                   <FiEdit2 size={14} />
                                   Rename
@@ -385,7 +387,7 @@ export default function DocumentPicker({
                                     setActiveMenuId(null);
                                     archiveDocument.mutate(document.id);
                                   }}
-                                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition"
+                                  className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition"
                                 >
                                   <FiArchive size={14} />
                                   Archive
@@ -399,7 +401,7 @@ export default function DocumentPicker({
                                   setActiveMenuId(null);
                                   restoreDocument.mutate(document.id);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 transition"
+                                className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-xs text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 transition"
                               >
                                 <FiRotateCcw size={14} />
                                 Restore

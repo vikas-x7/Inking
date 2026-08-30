@@ -25,24 +25,24 @@ const features = [
 
 export default function QuerySection() {
   return (
-    <section className="w-full   my-30">
-      <div className="w-6xl mx-auto">
-       
+    <section className="w-full my-16 lg:my-30">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
         <div className="mb-12">
-          <h2 className="text-4xl sm:text-5xl lg:text-[40px] font-semibold text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-semibold text-white">
             Why Choose Inking for LaTeX
           </h2>
         </div>
 
-      
-        <div className="flex flex-col lg:flex-row gap-20">
-         
+
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-20">
+
           <div className="w-full lg:w-[50%] flex flex-col divide-y divide-white/10">
             {features.map((f, i) => (
               <div key={i} className="py-5 flex gap-4 items-start">
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-white shrink-0" />
                 <div>
-                  <p className="text-[22px] font-medium text-white">
+                  <p className="text-[20px] sm:text-[22px] font-medium text-white">
                     {f.title}
                   </p>
                   <p className="text-[14px] text-white/40 mt-1 leading-relaxed">
@@ -53,15 +53,15 @@ export default function QuerySection() {
             ))}
           </div>
 
-          
-          <div className="flex flex-col gap-2 w-[50%] mt-40">
+
+          <div className="flex flex-col gap-2 w-full lg:w-[50%] mt-12 lg:mt-40">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-[#101010]  px-5 py-4.5"
+                className="bg-[#101010] px-5 py-4.5"
               >
                 <p className="text-[14px] text-[#fbfbfb] mb-2">{stat.label}</p>
-                <p className="text-[24px]  text-white">{stat.value}</p>
+                <p className="text-[24px] text-white">{stat.value}</p>
               </div>
             ))}
           </div>

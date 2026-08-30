@@ -26,29 +26,38 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 px-6 py-4 transition-colors duration-300 ${scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-        }`}
+      className={`fixed top-0 left-0 w-full z-50 px-3 py-4 transition-colors duration-300 ${
+        scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
         <div className="flex items-center gap-8 md:gap-10">
           <Link href="/" className="flex items-center gap-1 group">
-            <img
-              src="image/logo.png"
-              alt="Inking Logo"
-              className="w-7  "
-            />
-            <span className="text-xl  font-bold tracking-tight text-white group-hover:opacity-90 transition">
+            <img src="image/logo.png" alt="Inking Logo" className="w-5 md:w-7  " />
+            <span className="md:text-xl  font-bold tracking-tight text-white group-hover:opacity-90 transition">
               Inking
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm font-bold text-white/90">
-            <a href="#features" onClick={(e) => handleScroll(e, 'features')} className="hover:text-white transition-colors">
+            <a
+              href="#features"
+              onClick={(e) => handleScroll(e, 'features')}
+              className="hover:text-white transition-colors"
+            >
               Features
             </a>
-            <a href="#demo" onClick={(e) => handleScroll(e, 'demo')} className="hover:text-white transition-colors">
+            <a
+              href="#demo"
+              onClick={(e) => handleScroll(e, 'demo')}
+              className="hover:text-white transition-colors"
+            >
               Demo
             </a>
-            <a href="#faq" onClick={(e) => handleScroll(e, 'faq')} className="hover:text-white transition-colors">
+            <a
+              href="#faq"
+              onClick={(e) => handleScroll(e, 'faq')}
+              className="hover:text-white transition-colors"
+            >
               FAQ
             </a>
             <Link href="/auth" className="hover:text-white transition-colors">
@@ -70,7 +79,7 @@ export default function Navbar() {
             className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-white hover:bg-white/90 text-black transition-all duration-150 shadow-sm"
           >
             <FaGithub />
-            
+
             <span>GitHub</span>
             <FiArrowUpRight size={14} className="opacity-70" />
           </a>
@@ -85,7 +94,7 @@ export default function Navbar() {
         </div>
       </div>
       {isOpen && (
-        <div className="md:hidden mt-3 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 px-5 pt-4 pb-6 space-y-4 shadow-2xl">
+        <div className="md:hidden mt-3 rounded-[5px] bg-black/80 backdrop-blur-xl  px-5 pt-4 pb-6 space-y-4 shadow-2xl">
           <div className="flex flex-col space-y-3 text-sm text-zinc-200">
             <a
               href="#features"

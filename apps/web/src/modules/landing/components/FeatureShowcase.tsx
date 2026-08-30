@@ -210,8 +210,8 @@ const sections: Section[] = [
 
 export default function FeatureShowcase() {
   return (
-    <section className="w-full bg-black text-white font-sans overflow-hidden my-50">
-      <div className="w-6xl mx-auto space-y-20">
+    <section className="w-full bg-black text-white font-sans overflow-hidden my-16 lg:my-50">
+      <div className="max-w-6xl mx-auto space-y-12 lg:space-y-20 px-4 sm:px-6">
         {sections.map(
           (
             {
@@ -230,12 +230,12 @@ export default function FeatureShowcase() {
           ) => (
             <div key={i} className={`grid grid-cols-1 lg:grid-cols-2 ${rootClass} w-full`}>
               <div
-                className={`${visualBg} p-8 sm:p-12 md:p-16 flex items-center justify-center relative overflow-hidden ${reverse ? 'order-1 lg:order-2' : ''}`}
+                className={`${visualBg} p-4 sm:p-12 md:p-16 flex items-center justify-center relative overflow-hidden ${reverse ? 'order-1 lg:order-2' : ''}`}
               >
                 <Visual />
               </div>
               <div
-                className={`bg-[#141414] p-8 sm:p-12 md:p-16 flex flex-col justify-center text-white ${reverse ? 'order-2 lg:order-1' : ''}`}
+                className={`bg-[#141414] p-5 sm:p-12 md:p-16 flex flex-col justify-center text-white ${reverse ? 'order-2 lg:order-1' : ''}`}
               >
                 <TextBlock
                   eyebrow={eyebrow}
