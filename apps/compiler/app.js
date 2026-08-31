@@ -46,7 +46,7 @@ function onInitialized(latex) {
 
     // Launch server.
     var port = config.port();
-    server = app.listen(port, () => {
+    server = app.listen(port, '0.0.0.0', () => {
         logger.info("Express server started", {
             port: server.address().port,
             env: app.settings.env,
