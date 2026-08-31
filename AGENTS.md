@@ -113,7 +113,7 @@ pnpm --filter database db:push    # Push schema to the database
 ## Environment Variables
 
 - Frontend: `NEXT_PUBLIC_API_URL` (API base URL)
-- Backend: See `apps/server/.env.example` (NODE_ENV, API_URL, FRONTEND_URL, ACCESS_JWT_SECRET, REFRESH_JWT_SECRET, GOOGLE_CLIENT_ID/SECRET, GITHUB_CLIENT_ID/SECRET, LATEX_ONLINE_URL)
+- Backend: See `apps/server/.env.example` (NODE_ENV, API_URL, FRONTEND_URL, ACCESS_JWT_SECRET, REFRESH_JWT_SECRET, GOOGLE_CLIENT_ID/SECRET, GITHUB_CLIENT_ID/SECRET, LATEX_COMPILER_URL, COMPILER_INTERNAL_TOKEN)
 - Database: See `packages/database/.env.example` (DATABASE_URL, DATABASE_POOL_SIZE)
 
 ## Important Notes

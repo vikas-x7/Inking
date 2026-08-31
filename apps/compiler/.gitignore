@@ -1,0 +1,17 @@
+*.swp
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+
+pids
+logs
+results
+
+node_modules
+npm-debug.log
+.DS_Store
+.env

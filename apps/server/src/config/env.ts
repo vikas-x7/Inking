@@ -23,8 +23,12 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
-  LATEX_ONLINE_URL: z.string().url().default('https://latexonline.cc'),
-  LATEX_COMPILER_TOKEN: z.string().optional(),
+  LATEX_COMPILER_URL: z.string().url(),
+  COMPILER_INTERNAL_TOKEN: z
+    .string({
+      error: 'COMPILER_INTERNAL_TOKEN is required.',
+    })
+    .min(1, 'COMPILER_INTERNAL_TOKEN is required.'),
 });
 
 const parsed = envSchema.safeParse(process.env);

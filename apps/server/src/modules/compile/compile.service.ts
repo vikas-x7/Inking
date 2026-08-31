@@ -22,12 +22,10 @@ export type CompileResult =
 
 export const compileService = {
   async compile(text: string): Promise<CompileResult> {
-    const url = new URL('/compile', env.LATEX_ONLINE_URL);
+    const url = new URL('/compile', env.LATEX_COMPILER_URL);
 
     const headers: Record<string, string> = { 'content-type': 'application/json' };
-    if (env.LATEX_COMPILER_TOKEN) {
-      headers.authorization = `Bearer ${env.LATEX_COMPILER_TOKEN}`;
-    }
+    headers.authorization = `Bearer ${env.COMPILER_INTERNAL_TOKEN}`;
 
     const body = JSON.stringify({ latex: text, command: 'pdflatex' });
 
@@ -37,6 +35,13 @@ export const compileService = {
       response = await fetch(url, { method: 'POST', headers, body });
     } catch {
       throw new AppError('LaTeX compiler is unavailable.', HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    }
+
+    if (response.status === HTTP_STATUS.UNAUTHORIZED) {
+      throw new AppError(
+        'LaTeX compiler authentication failed. Check COMPILER_INTERNAL_TOKEN.',
+        HTTP_STATUS.UNAUTHORIZED,
+      );
     }
 
     const contentType = response.headers.get('content-type') ?? '';

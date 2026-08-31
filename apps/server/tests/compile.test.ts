@@ -23,6 +23,31 @@ describe('GET /compile', () => {
     expect(body).toEqual(pdfBytes);
   });
 
+  it('POSTs JSON to the configured compiler URL with the internal token as a Bearer header', async () => {
+    const fetchMock = mockFetch().mockResolvedValue(
+      new Response(pdfBytes, {
+        status: 200,
+        headers: { 'content-type': 'application/pdf' },
+      }),
+    ) as unknown as typeof fetch;
+    globalThis.fetch = fetchMock;
+
+    const res = await app.request('/compile?text=%5Cdocumentclass%7Barticle%7D');
+
+    expect(res.status).toBe(200);
+    const calls = (fetchMock as unknown as { mock: { calls: unknown[][] } }).mock.calls;
+    const input = String(calls[0][0]);
+    const init = calls[0][1] as RequestInit;
+
+    expect(input).toBe('http://localhost:2700/compile');
+    expect(init.method).toBe('POST');
+    expect(init.headers).toEqual({
+      'content-type': 'application/json',
+      authorization: 'Bearer test-internal-token',
+    });
+    expect(String(init.body)).toBe(JSON.stringify({ latex: '\\documentclass{article}', command: 'pdflatex' }));
+  });
+
   it('returns a plain text log when the compiler returns an error', async () => {
     globalThis.fetch = mockFetch().mockResolvedValue(
       new Response('! LaTeX Error: File not found.', {
@@ -239,6 +264,21 @@ describe('GET /compile', () => {
     const res = await app.request('/compile?text=hello');
 
     expect(res.status).toBe(500);
+  });
+
+  it('returns 401 when the compiler rejects the shared token', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response('Unauthorized', {
+        status: 401,
+        headers: { 'content-type': 'text/plain' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=hello');
+
+    expect(res.status).toBe(401);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain('COMPILER_INTERNAL_TOKEN');
   });
 
   it('returns 400 when text is missing', async () => {

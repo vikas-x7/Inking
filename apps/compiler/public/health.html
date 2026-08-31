@@ -1,0 +1,105 @@
+<script>
+Promise.all([
+    fetchHealthData(),
+    new Promise(fulfill => document.addEventListener('DOMContentLoaded', fulfill)),
+]).then(healthData => renderHealthData(healthData[0]));
+
+
+async function fetchHealthData() {
+    var response = await fetch('/health.json');
+    return await response.json();
+}
+
+function renderHealthData(json) {
+    var uptimeElement = document.querySelector('#uptime');
+    var updateTimeElement = document.querySelector('#updatetime');
+    var healthElement = document.querySelector('#health');
+
+    uptimeElement.textContent = formatUptime(json.uptime);
+    updateTimeElement.textContent = '--';
+    var lastEntry = json.health[json.health.length - 1];
+    if (!lastEntry) {
+        healthElement.textContent = 'data not available.';
+        return;
+    }
+    updateTimeElement.textContent = formatUptime(Date.now() - lastEntry.timestamp);
+    healthElement.innerHTML = '';
+    for (var key in lastEntry) {
+        var value = lastEntry[key];
+        if (key === 'timestamp')
+            value = new Date(value);
+
+        var divElement = document.createElement('div');
+        var keyElement = document.createElement('div');
+        var valueElement = document.createElement('div');
+        divElement.classList.add('health-key-value');
+        keyElement.classList.add('health-key');
+        valueElement.classList.add('health-value');
+        divElement.appendChild(keyElement);
+        divElement.appendChild(valueElement);
+        healthElement.appendChild(divElement);
+
+        keyElement.textContent = key;
+        valueElement.textContent = value;
+    }
+}
+
+function formatUptime(uptime) {
+    var uptimeSeconds = (uptime / 1000)|0;
+    var uptimeMinutes = (uptimeSeconds / 60)|0
+    var uptimeHours = (uptimeMinutes / 60)|0;
+    var uptimeDays = (uptimeHours / 24)|0;
+    var uptimeWeeks = (uptimeDays / 7)|0;
+
+    var seconds = uptimeSeconds % 60;
+    var minutes = uptimeMinutes % 60;
+    var hours = uptimeHours % 24;
+    var days = uptimeDays % 7;
+    var weeks = (uptimeWeeks / 7)|0;
+    var result = [];
+    if (weeks)
+        result.push(`${weeks} weeks`);
+    if (weeks || days)
+        result.push(`${days} days`);
+    if (weeks || days || hours)
+        result.push(`${hours} hours`);
+    if (weeks || days || hours || minutes)
+        result.push(`${minutes} minutes`);
+    result.push(`${seconds} seconds`);
+    return result.join(' ');
+}
+
+</script>
+<style>
+body {
+    font-family: monospace;
+}
+.health-key-value {
+    display: flex;
+}
+
+.health-key-value:nth-child(even) {
+    background-color: #E1F5FE;
+}
+
+.health-key {
+    width: 400px;
+}
+
+</style>
+
+<h2>
+    Uptime:
+    <span id="uptime">
+    --
+    </span>
+</h2>
+<h2>
+    Health data updated:
+    <span id="updatetime">
+    ---
+    </span> ago
+</h2>
+<div id="health">
+</div>
+

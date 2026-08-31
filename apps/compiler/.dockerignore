@@ -1,0 +1,33 @@
+.git
+.gitignore
+.gitattributes
+.github
+
+node_modules
+npm-debug.log
+
+tests
+docs
+examples
+sample
+packages
+
+# Demo web assets that are not required by the compiler API.
+# /health only needs public/health.html, which is kept.
+public/index.html
+public/script.js
+public/style.css
+public/skeleton.css
+public/normalize.css
+public/icon.png
+public/icon.svg
+public/favicon.ico
+
+# Developer / client helpers, not part of the compiler service image.
+util/startDevServer.sh
+util/latexonline
+
+*.swp
+*.log
+*.out
+.DS_Store
