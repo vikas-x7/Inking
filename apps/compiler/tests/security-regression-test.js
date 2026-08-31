@@ -4,6 +4,7 @@ var path = require('path');
 
 var helpers = require('./http-helpers');
 var spawnServer = helpers.spawnServer;
+var httpGet = helpers.httpGet;
 var httpPostJson = helpers.httpPostJson;
 var httpPostMultipart = helpers.httpPostMultipart;
 var makeProjectTar = helpers.makeProjectTar;
@@ -38,6 +39,15 @@ describe('Security regression', function() {
         var code = await new Promise(resolve => child.on('exit', resolve));
         assert.strictEqual(code, 1, 'process must exit non-zero when the token is missing');
         assert.ok(/COMPILER_INTERNAL_TOKEN/.test(captured), 'output must explain the missing token: ' + captured);
+    });
+
+    it('exposes a public health endpoint without authentication', async function() {
+        server = await spawnServer({});
+        var response = await httpGet(server.baseUrl + '/health');
+        assert.strictEqual(response.status, 200);
+        var payload = JSON.parse(response.body);
+        assert.strictEqual(payload.success, true);
+        assert.strictEqual(payload.message, 'Compiler server is running');
     });
 
     it('rejects compilations with a 503 when storage is near-full', async function() {

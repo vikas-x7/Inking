@@ -1,4 +1,3 @@
-var path = require('path');
 var crypto = require('crypto');
 var fs = require('fs');
 var LatexOnline = require('./lib/LatexOnline');
@@ -253,7 +252,10 @@ app.get('/health.json', async (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'health.html'));
+    res.json({
+        success: true,
+        message: 'Compiler server is running',
+    });
 });
 
 app.get('/compile', requireInternalToken, asyncRoute(async (req, res) => {

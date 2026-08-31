@@ -46,6 +46,10 @@ export const compileService = {
 
     const contentType = response.headers.get('content-type') ?? '';
 
+    // TEMPORARY diagnostic (production 403 investigation): upstream status and
+    // content type only — never the token or the response body. Remove after.
+    console.log('[diag] compiler upstream', { status: response.status, contentType });
+
     if (response.ok && contentType.includes('application/pdf')) {
       return { ok: true, pdf: await response.arrayBuffer() };
     }
