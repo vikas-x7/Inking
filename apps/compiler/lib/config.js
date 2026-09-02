@@ -98,11 +98,28 @@ var config = {
     internalToken: () => process.env.COMPILER_INTERNAL_TOKEN || null,
 
     /**
-     * Executor strategy: 'none' runs the compiler directly in-process;
-     * 'docker' runs each compilation in a one-shot, hardened container.
+     * Maximum number of engine passes before a native compilation is declared
+     * complete. Compilations stop earlier as soon as the aux file settles, so
+     * this is an upper bound rather than the usual run count.
+     * @return {number}
+     */
+    maxPasses: () => positiveInt('LATEX_MAX_PASSES', 3),
+
+    /**
+     * Executor strategy:
+     *  - 'none' runs the latexrun pipeline in-process (development default);
+     *  - 'native' runs the TeX engine binary directly (production default for
+     *    Docker-deployed services, no containers inside the container);
+     *  - 'docker' runs each compilation in a one-shot, hardened container.
+     * Any unknown value falls back to the environment default.
      * @return {string}
      */
-    executor: () => (process.env.LATEX_EXECUTOR || 'none').toLowerCase(),
+    executor: () => {
+        var raw = String(process.env.LATEX_EXECUTOR || '').toLowerCase();
+        if (raw === 'docker' || raw === 'native' || raw === 'none')
+            return raw;
+        return config.nodeEnv() === 'production' ? 'native' : 'none';
+    },
 
     /**
      * @return {string}

@@ -4,6 +4,7 @@ var spawn = require('child_process').spawn;
 var utils = require('./utilities');
 var config = require('./config');
 var DockerExecutor = require('./DockerExecutor');
+var NativeExecutor = require('./NativeExecutor');
 var logger = utils.logger('Compilation');
 
 var compileScriptPath = path.join(__dirname, '..', 'shells', 'compile.sh');
@@ -321,8 +322,11 @@ class Compilation {
     _executor() {
         if (this._options.executor)
             return this._options.executor;
-        if (config.executor() === 'docker')
+        var strategy = config.executor();
+        if (strategy === 'docker')
             return new DockerExecutor();
+        if (strategy === 'native')
+            return new NativeExecutor();
         return {start: this._startLocal.bind(this)};
     }
 

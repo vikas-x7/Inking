@@ -1,50 +1,93 @@
-# Latex-Online hardened production image
+# Render service image for the Inking LaTeX compiler.
 #
-# - All TeX tooling and dependencies are installed at image build time;
-#   no network access or git clone is needed at runtime.
-# - The service runs as an unprivileged user.
-# - The image is intended to be run with a read-only root filesystem and
-#   dropped capabilities (see docker run flags in docs/deploy.md): all
-#   writable state lives under /tmp, which is mounted as tmpfs.
+# This is a self-contained deployment target: the Node.js compiler API and the
+# TeX toolchain (pdflatex/xelatex/lualatex + latexmk + biber) all live in this
+# one image, and the service runs TeX directly (LATEX_EXECUTOR=native). There
+# is intentionally NO docker-in-docker: no docker client, no docker socket, no
+# privileged mode - the in-process executor spawns the TeX binaries as ordinary
+# child processes.
 #
-# Bibliography support:
-#   - biblatex.sty ships in texlive-bibtex-extra (not texlive-latex-extra),
-#   - biber (the biblatex backend) is a separate package.
+# Render settings:
+#   Runtime            : Docker
+#   Root Directory     : .
+#   Dockerfile Path    : apps/compiler/Dockerfile
+#   Start Command      : (leave empty - built into the image)
+#   Health Check Path  : /health
+#   Instance Type      : any size (compiles run on the service instance)
+#
+# Required runtime env:
+#   COMPILER_INTERNAL_TOKEN  shared secret used to authenticate compiles
+#   PORT                     Render injects it; defaults to 10000 here
+#   LATEX_EXECUTOR           defaults to native in the image
+#
+# Build (from the repo root):
+#   docker build -f apps/compiler/Dockerfile -t inking-compiler .
+#
+# Run. Note: apps/compiler/.env is the LOCAL dev config (PORT=2700,
+# LATEX_EXECUTOR=docker), so the container run must override it:
+#   docker run --rm -p 10000:10000 --env-file apps/compiler/.env \
+#     -e PORT=10000 -e LATEX_EXECUTOR=native inking-compiler
 
 FROM node:22-slim
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# TeX distribution (engines + document classes + common packages + biber +
+# latexmk) plus the tools the service shells out to (bash, python3 for the
+# latexrun fallback, git for URL/git compilations, curl for the health check).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        bash \
+        python3 \
         texlive-latex-base \
         texlive-latex-recommended \
         texlive-fonts-recommended \
         texlive-latex-extra \
         texlive-bibtex-extra \
-        biber \
         texlive-xetex \
+        biber \
+        latexmk \
         lmodern \
         cm-super \
-        python3 \
-        ca-certificates \
-        docker.io \
-        && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-RUN userdel node 2>/dev/null || true; \
-    groupdel node 2>/dev/null || true; \
-    groupadd --gid 1000 app && \
-    useradd --create-home --uid 1000 --gid 1000 --shell /bin/bash app
+# pnpm (exact version from the repo's packageManager field).
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+# Copy the dependency manifests first so installs are cached across builds.
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/web/package.json apps/web/package.json
+COPY apps/server/package.json apps/server/package.json
+COPY packages/database/package.json packages/database/package.json
+COPY apps/compiler/package.json apps/compiler/package.json
 
-COPY --chown=app:app . /app
+# Scoped, production-only install for the compiler workspace member
+# (express/multer/request/compression/winston). --ignore-scripts skips husky.
+RUN pnpm install --filter compiler --prod --frozen-lockfile --ignore-scripts
 
-USER app:app
+# Application code.
+COPY apps/compiler apps/compiler
 
-EXPOSE 2700
+ENV NODE_ENV=production \
+    PORT=10000 \
+    LATEX_EXECUTOR=native \
+    LATEX_TMP_FOLDER=/tmp/downloads \
+    LATEX_RESULTS_FOLDER=/tmp/storage
 
-ENV NODE_ENV=production
+# Non-root operator: everything this service writes lives under /tmp, and the
+# staged project + results folders are created at startup by the app itself.
+RUN groupadd --gid 10001 compiler && \
+    useradd --uid 10001 --gid compiler --no-create-home --shell /usr/sbin/nologin compiler && \
+    chown -R compiler:compiler /app
+USER compiler
+
+WORKDIR /app/apps/compiler
+
+EXPOSE 10000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -fsS http://localhost:${PORT:-10000}/health || exit 1
 
 CMD ["node", "app.js"]

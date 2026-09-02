@@ -1,0 +1,21 @@
+.git
+.gitignore
+.gitattributes
+.github
+
+# Never ship secrets or local config into a image.
+**/.env
+**/.env.*
+*.pem
+*.key
+
+node_modules
+**/node_modules
+.pnpm-store
+.turbo
+.next
+dist
+build
+coverage
+tmp
+*.log

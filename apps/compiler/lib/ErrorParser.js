@@ -40,6 +40,35 @@ var ERROR_WITHOUT_LINE_RE = /^(\S.*?): error: (.*)$/;
 var FILE_NOT_FOUND_RE = /^File [`'](.+?)['`] not found$/;
 
 /*
+ * Raw pdflatex transcripts (native in-process executor). With
+ * `-file-line-error` the engine prints:
+ *
+ *     ./main.tex:6: Undefined control sequence.
+ *     l.6 \helloWorld
+ *     ./main.tex:6:  ==> Fatal error occurred, no output PDF file produced!
+ *
+ * or, for a command mid-line:
+ *
+ *     ./main.tex:3: Undefined control sequence.
+ *     l.3 Text here \helloWorld
+ *                           more text.
+ *
+ * These lines are scanned only when no latexrun block matched, and reuse the
+ * same classifiers; the offending control sequence is recovered from the
+ * trailing token shown on the `l.N` source line (pdflatex always stops right
+ * after the failing token).
+ */
+var PDFLATEX_ERROR_RE = /^(\.\/(?:[^:]+)|[^:]+\.(?:tex|sty|cls)):(\d+):\s*(.*)$/;
+var PDFLATEX_SOURCE_LINE_RE = /^l\.\d+\s+(.*)$/;
+var NATIVE_SPAWN_FAIL_RE = /failed to start "([a-z]+)"/;
+/*
+ * Missing-file / missing-package errors print as `! LaTeX Error: ...` WITHOUT
+ * a file:line: prefix; the location comes from the `file:line: Emergency stop.`
+ * header that immediately follows (after the "Enter file name:" prompt).
+ */
+var LATEX_ERROR_RE = /^! LaTeX Error: (.+?)\s*$/;
+
+/*
  * Bibliography-tool failures (biber/bibtex). When the bibliography tool
  * cannot complete, latexrun raises "failed to execute bibtex task" and echoes
  * the tool's own stderr into the log - neither of which is in latexrun's
@@ -99,9 +128,36 @@ function parseRawLog(logText, options) {
         if (!best || candidate.specificity > best.specificity)
             best = candidate;
     }
+    if (!best) {
+        // No latexrun block: the log may be a raw pdflatex transcript from the
+        // native in-process executor, which uses the same error classes.
+        for (var pblock of scanPdflatexBlocks(logText)) {
+            var nativeCandidate = classifyBlock(pblock, workdir);
+            if (!best || nativeCandidate.specificity > best.specificity)
+                best = nativeCandidate;
+        }
+    }
     if (!best)
-        return fallbackError();
+        return nativeStartError(logText) || fallbackError();
     return best.error;
+}
+
+/**
+ * @param {string} logText
+ * @return {?Object} a structured error when the native executor reported that
+ *    the LaTeX binary itself could not be started (missing package/server)
+ */
+function nativeStartError(logText) {
+    var m = NATIVE_SPAWN_FAIL_RE.exec(String(logText || ''));
+    if (!m)
+        return null;
+    return {
+        type: 'compilation_error',
+        message: `The LaTeX compiler "${m[1]}" could not be started on this compiler service.`,
+        file: null,
+        line: null,
+        column: null,
+    };
 }
 
 /**
@@ -176,6 +232,76 @@ function cleanBiberLine(line) {
     return String(line || '')
         .replace(/\s*[.,;:'`-]*\s*skipping\s*\.\.\.\s*$/, '')
         .trim();
+}
+
+/**
+ * Splits a raw pdflatex transcript into error blocks. Each block starts with
+ * a `file:line: message` header and collects the following context lines (the
+ * indented rest-of-source line and the `l.N source` echo) until a blank line
+ * or the next header closes it.
+ *
+ * @param {string} logText
+ * @return {!Array<!{file: string, line: number, message: string, context: !Array<string>, style: string}>}
+ */
+function scanPdflatexBlocks(logText) {
+    var blocks = [];
+    var current = null;
+    var pendingLatexError = null;
+    var lines = String(logText || '').split('\n');
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var header = PDFLATEX_ERROR_RE.exec(line);
+        if (header) {
+            if (current)
+                blocks.push(current);
+            if (pendingLatexError) {
+                // Attach the deferred "! LaTeX Error:" message to the location
+                // reported by the following "Emergency stop." header.
+                blocks.push({
+                    file: header[1],
+                    line: parseInt(header[2], 10),
+                    message: pendingLatexError,
+                    context: [],
+                    style: 'pdflatex',
+                });
+                pendingLatexError = null;
+            }
+            current = {
+                file: header[1],
+                line: parseInt(header[2], 10),
+                message: header[3].trim(),
+                context: [],
+                style: 'pdflatex',
+            };
+            continue;
+        }
+        var latexErrorLine = LATEX_ERROR_RE.exec(line);
+        if (latexErrorLine) {
+            // The trailing period is stripped so the message reuses the same
+            // classifiers/message builders as the latexrun path.
+            pendingLatexError = latexErrorLine[1].replace(/\s*\.\s*$/, '').trim();
+            continue;
+        }
+        if (!current)
+            continue;
+        // Context: the indented rest-of-source line and the unindented
+        // `l.N ...` echo that shows where the error stopped.
+        if (/^\s+\S/.test(line) || PDFLATEX_SOURCE_LINE_RE.test(line)) {
+            current.context.push(line);
+            continue;
+        }
+        if (!line.trim()) {
+            blocks.push(current);
+            current = null;
+            continue;
+        }
+        // Any other unindented line (banner, memory summary, ...) closes the block.
+        blocks.push(current);
+        current = null;
+    }
+    if (current)
+        blocks.push(current);
+    return blocks;
 }
 
 /**
@@ -360,8 +486,27 @@ function extractUndefinedCommand(block) {
         }
         break;
     }
-    if (!atLine)
+    if (!atLine) {
+        // Raw pdflatex blocks carry no `at` line. The engine stops right after
+        // the failing token, so it is the trailing control sequence shown on
+        // the `l.N source` echo (e.g. `l.3 Text here \helloWorld`). Never
+        // guessed: reported only when the block actually came from pdflatex.
+        if (block.style !== 'pdflatex')
+            return null;
+        for (var li = 0; li < block.context.length; li++) {
+            var sourceLine = PDFLATEX_SOURCE_LINE_RE.exec(block.context[li]);
+            if (!sourceLine)
+                continue;
+            var shown = sourceLine[1];
+            var tokens = [];
+            var re = /\\([a-zA-Z@]+)/g;
+            var mm;
+            while ((mm = re.exec(shown)) !== null)
+                tokens.push(mm[0]);
+            return tokens.length ? tokens[tokens.length - 1] : null;
+        }
         return null;
+    }
 
     var matches = [];
     var tokenRe = /\\([a-zA-Z@]+)/g;
