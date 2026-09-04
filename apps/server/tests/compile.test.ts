@@ -45,7 +45,9 @@ describe('GET /compile', () => {
       'content-type': 'application/json',
       authorization: 'Bearer test-internal-token',
     });
-    expect(String(init.body)).toBe(JSON.stringify({ latex: '\\documentclass{article}', command: 'pdflatex' }));
+    expect(String(init.body)).toBe(
+      JSON.stringify({ latex: '\\documentclass{article}', command: 'pdflatex' }),
+    );
   });
 
   it('returns a plain text log when the compiler returns an error', async () => {
@@ -242,7 +244,7 @@ describe('GET /compile', () => {
     expect(await res.text()).toContain('"message":"ignored"');
   });
 
-  it('passes through a plain-text compiler failure untouched', async () => {
+  it('returns 503 COMPILER_UNAVAILABLE when the compiler reports a service-level failure', async () => {
     globalThis.fetch = mockFetch().mockResolvedValue(
       new Response('Compiler is busy, please retry later.', {
         status: 503,
@@ -252,21 +254,69 @@ describe('GET /compile', () => {
 
     const res = await app.request('/compile?text=hello');
 
-    expect(res.status).toBe(400);
-    expect(await res.text()).toBe('Compiler is busy, please retry later.');
+    expect(res.status).toBe(503);
+    const body = (await res.json()) as { success: boolean; error: { code: string } };
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('COMPILER_UNAVAILABLE');
+    expect(JSON.stringify(body)).not.toContain('Compiler is busy');
   });
 
-  it('returns 500 when the compiler is unreachable', async () => {
+  it('returns 503 when the compiler is unreachable', async () => {
     globalThis.fetch = mockFetch().mockRejectedValue(
       new TypeError('fetch failed'),
     ) as unknown as typeof fetch;
 
     const res = await app.request('/compile?text=hello');
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(503);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe('COMPILER_UNAVAILABLE');
   });
 
-  it('returns 401 when the compiler rejects the shared token', async () => {
+  it('returns 504 COMPILER_TIMEOUT when the compiler times out', async () => {
+    globalThis.fetch = mockFetch().mockRejectedValue(
+      new DOMException('The operation was aborted.', 'AbortError'),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=hello');
+
+    expect(res.status).toBe(504);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe('COMPILER_TIMEOUT');
+  });
+
+  it('returns 502 COMPILER_ERROR for a 200 response that is not a PDF', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response('<html>not a pdf</html>', {
+        status: 200,
+        headers: { 'content-type': 'text/html' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=hello');
+
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe('COMPILER_ERROR');
+    expect(JSON.stringify(body)).not.toContain('not a pdf');
+  });
+
+  it('returns 502 COMPILER_ERROR for an empty 200 response', async () => {
+    globalThis.fetch = mockFetch().mockResolvedValue(
+      new Response('', {
+        status: 200,
+        headers: { 'content-type': 'application/pdf' },
+      }),
+    ) as unknown as typeof fetch;
+
+    const res = await app.request('/compile?text=hello');
+
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe('COMPILER_ERROR');
+  });
+
+  it('returns 502 when the compiler rejects the shared token without leaking credentials', async () => {
     globalThis.fetch = mockFetch().mockResolvedValue(
       new Response('Unauthorized', {
         status: 401,
@@ -276,9 +326,11 @@ describe('GET /compile', () => {
 
     const res = await app.request('/compile?text=hello');
 
-    expect(res.status).toBe(401);
-    const body = (await res.json()) as { error: string };
-    expect(body.error).toContain('COMPILER_INTERNAL_TOKEN');
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: { code: string; message: string } };
+    expect(body.error.code).toBe('COMPILER_ERROR');
+    expect(body.error.message).not.toContain('COMPILER_INTERNAL_TOKEN');
+    expect(JSON.stringify(body)).not.toContain('Unauthorized');
   });
 
   it('returns 400 when text is missing', async () => {

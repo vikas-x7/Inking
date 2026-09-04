@@ -1,6 +1,7 @@
-import { GitHub } from 'arctic';
+import { GitHub, type OAuth2Tokens } from 'arctic';
 import { env } from '../../../config/env.js';
-import { AppError } from '../../../shared/utils/app-error.js';
+import { AppError, ExternalServiceError } from '../../../shared/errors/app-error.js';
+import { ERROR_CODES } from '../../../shared/errors/error-codes.js';
 import { HTTP_STATUS } from '../../../shared/constants/http.constants.js';
 import type { OAuthAuthorization, OAuthProfile, OAuthTokens } from '../auth.types.js';
 import { AUTH_PROVIDER } from '../auth.constants.js';
@@ -8,7 +9,12 @@ import { createOAuthState, getAccessTokenExpiresAt } from '../utils/oauth.js';
 
 const getGithubClient = () => {
   if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-    throw new AppError('GitHub OAuth is not configured.', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError('Sign in with GitHub is temporarily unavailable.', {
+      statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      code: ERROR_CODES.INTERNAL_SERVER_ERROR,
+      isOperational: false,
+      cause: new Error('GitHub OAuth client credentials are not configured.'),
+    });
   }
 
   return new GitHub(
@@ -33,22 +39,38 @@ type GithubEmailResponse = {
 };
 
 const fetchPrimaryGithubEmail = async (accessToken: string) => {
-  const response = await fetch('https://api.github.com/user/emails', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/vnd.github+json',
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch('https://api.github.com/user/emails', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/vnd.github+json',
+      },
+    });
+  } catch (error) {
+    throw new ExternalServiceError('Failed to sign in with GitHub.', {
+      service: 'github-oauth',
+      code: ERROR_CODES.OAUTH_PROVIDER_ERROR,
+      cause: error,
+    });
+  }
 
   if (!response.ok) {
-    throw new AppError('Failed to fetch GitHub email.', HTTP_STATUS.BAD_REQUEST);
+    throw new ExternalServiceError('Failed to sign in with GitHub.', {
+      service: 'github-oauth',
+      code: ERROR_CODES.OAUTH_PROVIDER_ERROR,
+      cause: new Error(`GitHub emails API returned HTTP ${response.status}.`),
+    });
   }
 
   const emails = (await response.json()) as GithubEmailResponse[];
   const primaryEmail = emails.find((email) => email.primary && email.verified);
 
   if (!primaryEmail) {
-    throw new AppError('GitHub primary email is not verified.', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError('GitHub primary email is not verified.', {
+      statusCode: HTTP_STATUS.BAD_REQUEST,
+      code: ERROR_CODES.BAD_REQUEST,
+    });
   }
 
   return primaryEmail.email.toLowerCase();
@@ -63,18 +85,42 @@ export const githubProvider = {
   },
 
   async validateCallback(code: string): Promise<{ profile: OAuthProfile; tokens: OAuthTokens }> {
-    const tokens = await getGithubClient().validateAuthorizationCode(code);
+    let tokens: OAuth2Tokens;
+
+    try {
+      tokens = await getGithubClient().validateAuthorizationCode(code);
+    } catch (error) {
+      throw new ExternalServiceError('Failed to sign in with GitHub.', {
+        service: 'github-oauth',
+        code: ERROR_CODES.OAUTH_PROVIDER_ERROR,
+        cause: error,
+      });
+    }
+
     const accessToken = tokens.accessToken();
 
-    const response = await fetch('https://api.github.com/user', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/vnd.github+json',
-      },
-    });
+    let response: Response;
+    try {
+      response = await fetch('https://api.github.com/user', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/vnd.github+json',
+        },
+      });
+    } catch (error) {
+      throw new ExternalServiceError('Failed to sign in with GitHub.', {
+        service: 'github-oauth',
+        code: ERROR_CODES.OAUTH_PROVIDER_ERROR,
+        cause: error,
+      });
+    }
 
     if (!response.ok) {
-      throw new AppError('Failed to fetch GitHub profile.', HTTP_STATUS.BAD_REQUEST);
+      throw new ExternalServiceError('Failed to sign in with GitHub.', {
+        service: 'github-oauth',
+        code: ERROR_CODES.OAUTH_PROVIDER_ERROR,
+        cause: new Error(`GitHub user API returned HTTP ${response.status}.`),
+      });
     }
 
     const profile = (await response.json()) as GithubUserResponse;

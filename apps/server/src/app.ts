@@ -2,20 +2,18 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { env } from './config/env.js';
 import { registerRoutes } from './routes.js';
-import { errorHandler } from './shared/middleware/error.middleware.js';
+import { AppError } from './shared/errors/app-error.js';
+import { ERROR_CODES } from './shared/errors/error-codes.js';
+import { globalErrorHandler } from './shared/errors/global-error-handler.js';
+import { HTTP_STATUS } from './shared/constants/http.constants.js';
+import { requestIdMiddleware } from './shared/middleware/request-id.middleware.js';
+import type { AppBindings } from './shared/types/app.types.js';
 
-const app = new Hono();
+const app = new Hono<AppBindings>();
 
-// TEMPORARY production diagnostics for the POST /compile 403 investigation.
-// Logs method/path/origin/cookie-presence/status only — never secrets or
-// cookie/token values. Remove once the source of the production 403 is found.
-app.use('*', async (c, next) => {
-  const startedAt = Date.now();
-  await next();
-  console.log(
-    `[diag] ${c.req.method} ${c.req.path} origin=${c.req.header('origin') ?? 'none'} cookies=${c.req.header('cookie') ? 'yes' : 'no'} status=${c.res.status} ${Date.now() - startedAt}ms`,
-  );
-});
+// Every request gets a correlation ID before anything else runs so errors,
+// logs, and responses can all reference it.
+app.use('*', requestIdMiddleware);
 
 // Cronix-style cross-origin setup: the browser calls this API DIRECTLY from the
 // Vercel frontend. FRONTEND_URL (the Vercel origin) is the only allowed origin,
@@ -29,7 +27,20 @@ app.use(
   }),
 );
 
-app.onError(errorHandler);
+// Single registration point for the application-wide error handler.
+app.onError((error, c) => globalErrorHandler.handle(error, c));
+
+// Unknown routes return the same standard error shape as everything else.
+app.notFound((c) =>
+  globalErrorHandler.handle(
+    new AppError('Route not found.', {
+      statusCode: HTTP_STATUS.NOT_FOUND,
+      code: ERROR_CODES.RESOURCE_NOT_FOUND,
+      isOperational: true,
+    }),
+    c,
+  ),
+);
 
 app.get('/', (c) => c.json({ status: 'ok', service: 'ink-api' }));
 

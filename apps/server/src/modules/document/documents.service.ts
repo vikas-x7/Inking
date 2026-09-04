@@ -1,5 +1,4 @@
-import { HTTP_STATUS } from '../../shared/constants/http.constants.js';
-import { AppError } from '../../shared/utils/app-error.js';
+import { NotFoundError } from '../../shared/errors/app-error.js';
 import { documentsRepository } from './documents.repository.js';
 import type { UpdateDocumentInput } from './documents.schema.js';
 
@@ -12,7 +11,7 @@ export const documentsService = {
     const document = await documentsRepository.findById(documentId);
 
     if (!document || document.userId !== userId) {
-      throw new AppError('Document not found.', HTTP_STATUS.NOT_FOUND);
+      throw new NotFoundError('Document not found.');
     }
 
     return document;

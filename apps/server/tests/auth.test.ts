@@ -4,7 +4,7 @@ import app from '../src/app.js';
 import { googleProvider } from './mocks/google.provider.js';
 import { githubProvider } from './mocks/github.provider.js';
 import { prisma } from './mocks/prisma.js';
-import { AppError } from '../src/shared/utils/app-error.js';
+import { AppError } from '../src/shared/errors/app-error.js';
 import { accessCookie, documentFixture, refreshCookie, userFixture } from './helpers.js';
 
 const db = prisma;
@@ -28,7 +28,7 @@ describe('GET /auth/google', () => {
 
   it('returns 400 when Google is not configured', async () => {
     googleMock.createAuthorization.mockImplementation(() => {
-      throw new AppError('Google OAuth is not configured.', 400);
+      throw new AppError('Google OAuth is not configured.', { statusCode: 400 });
     });
 
     const res = await app.request('/auth/google');

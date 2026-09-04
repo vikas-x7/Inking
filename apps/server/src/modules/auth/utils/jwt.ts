@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, errors as joseErrors, jwtVerify } from 'jose';
 import { env } from '../../../config/env.js';
 import { ACCESS_TOKEN_TTL_SECONDS, REFRESH_TOKEN_TTL_SECONDS } from '../auth.constants.js';
 
@@ -11,6 +11,10 @@ type SessionJwtPayload = {
   userId: string;
   type: TokenType;
 };
+
+export type TokenVerificationResult =
+  | { ok: true; userId: string }
+  | { ok: false; reason: 'invalid' | 'expired' };
 
 const createJwt = (payload: SessionJwtPayload, secret: Uint8Array, ttlSeconds: number) => {
   return new SignJWT(payload)
@@ -27,17 +31,28 @@ export const createAccessJwt = (userId: string) =>
 export const createRefreshJwt = (userId: string) =>
   createJwt({ userId, type: 'refresh' }, refreshJwtSecret, REFRESH_TOKEN_TTL_SECONDS);
 
-const verifyJwt = async (token: string, secret: Uint8Array, type: TokenType) => {
+/**
+ * Verifies a token and distinguishes between an invalid token and an expired
+ * one so auth errors can carry accurate, non-enumerating error codes.
+ */
+const verifyJwt = async (
+  token: string,
+  secret: Uint8Array,
+  type: TokenType,
+): Promise<TokenVerificationResult> => {
   try {
     const { payload } = await jwtVerify(token, secret);
 
     if (typeof payload.userId !== 'string' || payload.type !== type) {
-      return null;
+      return { ok: false, reason: 'invalid' };
     }
 
-    return { userId: payload.userId };
-  } catch {
-    return null;
+    return { ok: true, userId: payload.userId };
+  } catch (error) {
+    if (error instanceof joseErrors.JWTExpired) {
+      return { ok: false, reason: 'expired' };
+    }
+    return { ok: false, reason: 'invalid' };
   }
 };
 

@@ -1,6 +1,7 @@
 import { env } from '../../config/env.js';
 import { HTTP_STATUS } from '../../shared/constants/http.constants.js';
-import { AppError } from '../../shared/utils/app-error.js';
+import { AppError, AuthenticationError } from '../../shared/errors/app-error.js';
+import { ERROR_CODES } from '../../shared/errors/error-codes.js';
 import { AUTH_PROVIDER } from './auth.constants.js';
 import { authRepository } from './auth.repository.js';
 import type { AuthTokenPair, AuthUser } from './auth.types.js';
@@ -37,7 +38,10 @@ export const authService = {
     tokens: Parameters<typeof authRepository.upsertOAuthUser>[1],
   ): Promise<{ user: AuthUser } & AuthTokenPair> {
     if (profile.provider !== AUTH_PROVIDER.google && profile.provider !== AUTH_PROVIDER.github) {
-      throw new AppError('Unsupported OAuth provider.', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Unsupported OAuth provider.', {
+        statusCode: HTTP_STATUS.BAD_REQUEST,
+        code: ERROR_CODES.BAD_REQUEST,
+      });
     }
 
     const user = await authRepository.upsertOAuthUser(profile, tokens);
@@ -59,19 +63,29 @@ export const authService = {
 
   async getCurrentUser(accessToken?: string): Promise<AuthUser> {
     if (!accessToken) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+      throw new AuthenticationError('Authentication required.', {
+        code: ERROR_CODES.AUTHENTICATION_REQUIRED,
+      });
     }
 
-    const payload = await verifyAccessJwt(accessToken);
+    const result = await verifyAccessJwt(accessToken);
 
-    if (!payload) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+    if (!result.ok) {
+      throw new AuthenticationError(
+        result.reason === 'expired' ? 'Your session has expired.' : 'Invalid session.',
+        {
+          code: result.reason === 'expired' ? ERROR_CODES.TOKEN_EXPIRED : ERROR_CODES.INVALID_TOKEN,
+        },
+      );
     }
 
-    const user = await authRepository.findUserById(payload.userId);
+    const user = await authRepository.findUserById(result.userId);
 
     if (!user) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+      // Generic 401: do not reveal whether the account still exists.
+      throw new AuthenticationError('Authentication required.', {
+        code: ERROR_CODES.AUTHENTICATION_REQUIRED,
+      });
     }
 
     return user;
@@ -79,19 +93,28 @@ export const authService = {
 
   async refreshTokens(refreshToken?: string): Promise<{ user: AuthUser } & AuthTokenPair> {
     if (!refreshToken) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+      throw new AuthenticationError('Authentication required.', {
+        code: ERROR_CODES.AUTHENTICATION_REQUIRED,
+      });
     }
 
-    const payload = await verifyRefreshJwt(refreshToken);
+    const result = await verifyRefreshJwt(refreshToken);
 
-    if (!payload) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+    if (!result.ok) {
+      throw new AuthenticationError(
+        result.reason === 'expired' ? 'Your session has expired.' : 'Invalid session.',
+        {
+          code: result.reason === 'expired' ? ERROR_CODES.TOKEN_EXPIRED : ERROR_CODES.INVALID_TOKEN,
+        },
+      );
     }
 
-    const user = await authRepository.findUserById(payload.userId);
+    const user = await authRepository.findUserById(result.userId);
 
     if (!user) {
-      throw new AppError('Unauthorized.', HTTP_STATUS.UNAUTHORIZED);
+      throw new AuthenticationError('Authentication required.', {
+        code: ERROR_CODES.AUTHENTICATION_REQUIRED,
+      });
     }
 
     const accessToken = await createAccessJwt(user.id);

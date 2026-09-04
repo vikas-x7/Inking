@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import { HTTP_STATUS } from '../../shared/constants/http.constants.js';
-import { AppError } from '../../shared/utils/app-error.js';
+import { AppError } from '../../shared/errors/app-error.js';
+import { ERROR_CODES } from '../../shared/errors/error-codes.js';
 import { AUTH_COOKIE_NAMES } from './auth.constants.js';
 import { oauthCallbackSchema } from './auth.schema.js';
 import { authService } from './auth.service.js';
@@ -23,7 +24,10 @@ export const authController = {
     setOAuthCookie(c, AUTH_COOKIE_NAMES.googleState, authorization.state);
 
     if (!authorization.codeVerifier) {
-      throw new AppError('Google code verifier was not generated.', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Google code verifier was not generated.', {
+        statusCode: HTTP_STATUS.BAD_REQUEST,
+        code: ERROR_CODES.BAD_REQUEST,
+      });
     }
 
     setOAuthCookie(c, AUTH_COOKIE_NAMES.googleCodeVerifier, authorization.codeVerifier);
@@ -39,7 +43,10 @@ export const authController = {
     assertMatchingState(query.state, storedState);
 
     if (!codeVerifier) {
-      throw new AppError('Missing Google code verifier.', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Missing Google code verifier.', {
+        statusCode: HTTP_STATUS.BAD_REQUEST,
+        code: ERROR_CODES.INVALID_OAUTH_STATE,
+      });
     }
 
     const { user, accessToken, refreshToken } = await authService.handleGoogleCallback(

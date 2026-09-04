@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
 import { HTTP_STATUS } from '../../shared/constants/http.constants.js';
-import { AppError } from '../../shared/utils/app-error.js';
+import { ValidationError } from '../../shared/errors/app-error.js';
 import { compileBodySchema, compileQuerySchema } from './compile.schema.js';
 import { compileService } from './compile.service.js';
 
@@ -27,12 +27,9 @@ const renderCompileResult = async (c: Context, text: string) => {
     return c.text(result.error, HTTP_STATUS.BAD_REQUEST);
   }
 
-  return new Response(result.pdf, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'inline',
-    },
+  return c.body(result.pdf, 200, {
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': 'inline',
   });
 };
 
@@ -49,7 +46,9 @@ export const compileController = {
     try {
       body = await c.req.json();
     } catch {
-      throw new AppError('Request body must be valid JSON.', HTTP_STATUS.BAD_REQUEST);
+      throw new ValidationError('Request body must be valid JSON.', {
+        details: [{ field: 'body', message: 'Request body must be a valid JSON object.' }],
+      });
     }
 
     const { text } = compileBodySchema.parse(body);

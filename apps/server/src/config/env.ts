@@ -43,3 +43,6 @@ if (!parsed.success) {
 export const env = parsed.data;
 
 export const isProduction = env.NODE_ENV === 'production';
+
+/** Dynamic check so error handling can react to runtime NODE_ENV changes. */
+export const isProductionEnv = () => process.env.NODE_ENV === 'production';
