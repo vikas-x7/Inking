@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiMenu, FiX, FiGithub, FiArrowUpRight } from 'react-icons/fi';
 import { FaGithub } from 'react-icons/fa6';
 
@@ -26,14 +27,19 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 px-3 py-4 transition-colors duration-300 ${
-        scrolled ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 px-3 py-4 transition-colors duration-300 bg-black`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
         <div className="flex items-center gap-8 md:gap-10">
           <Link href="/" className="flex items-center gap-1 group">
-            <img src="image/logo.png" alt="Inking Logo" className="w-5 md:w-7  " />
+            <Image
+              src="/image/logo.png"
+              alt="Inking Logo"
+              width={48}
+              height={48}
+              priority
+              className="w-5 md:w-6 h-auto"
+            />
             <span className="md:text-xl  font-bold tracking-tight text-white group-hover:opacity-90 transition">
               Inking
             </span>

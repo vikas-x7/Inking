@@ -14,8 +14,7 @@ const defaultCards: ResourceCardItem[] = [
     title: 'Live LaTeX Preview',
     category:
       'See your document render in real-time as you typeevery equation, table, and figure appears instantly.',
-    image:
-      'https://i.pinimg.com/736x/cd/63/c7/cd63c743a3ed6a81b887fd19367ec26f.jpg',
+    image: 'https://i.pinimg.com/736x/cd/63/c7/cd63c743a3ed6a81b887fd19367ec26f.jpg',
     href: '#',
   },
   {
@@ -23,8 +22,7 @@ const defaultCards: ResourceCardItem[] = [
     title: 'Built-in PDF Export',
     category:
       'Export your LaTeX documents to publication-ready PDFs with a single click  perfect for journals, assignments, and reports.',
-    image:
-      'https://i.pinimg.com/1200x/2e/ac/e6/2eace612c81c2b90c6bd6741df301d73.jpg',
+    image: 'https://i.pinimg.com/1200x/2e/ac/e6/2eace612c81c2b90c6bd6741df301d73.jpg',
     href: '#',
   },
   {
@@ -32,29 +30,28 @@ const defaultCards: ResourceCardItem[] = [
     title: 'Cloud-Saved Projects',
     category:
       'Your documents are automatically saved and synced across devices  pick up exactly where you left off, anytime.',
-    image:
-      'https://i.pinimg.com/736x/a1/f2/25/a1f225616fd79ab42113751ba430ddb1.jpg',
+    image: 'https://i.pinimg.com/736x/a1/f2/25/a1f225616fd79ab42113751ba430ddb1.jpg',
     href: '#',
   },
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="w-full bg-black text-white py-16 px-4 sm:px-6 lg:px-8 font-sans scroll-mt-24">
+    <section
+      id="features"
+      className="w-full bg-black text-white py-16 px-4 sm:px-6 lg:px-8 font-sans scroll-mt-24"
+    >
       <div className="max-w-6xl mx-auto">
-
         <div className="mb-12 text-left">
           <h2 className="text-3xl sm:text-4xl md:text-4xl text-white  font-semibold ">
             One editor <br />
             Every document handled
           </h2>
           <p className="text-white/50 text-base sm:text-lg mt-4 max-w-2xl leading-relaxed">
-            Everything you need to write, preview, and publish clean LaTeX  live
-            rendering, one click PDF export, and auto-saved cloud projects in a
-            single focused editor.
+            Everything you need to write, preview, and publish clean LaTeX live rendering, one click
+            PDF export, and auto-saved cloud projects in a single focused editor.
           </p>
         </div>
-
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {defaultCards.map((card) => (
@@ -71,9 +68,7 @@ export default function Features() {
                 <h3 className="text-white font-semibold text-base sm:text-lg  group-hover:text-slate-200 transition">
                   {card.title}
                 </h3>
-                <p className="text-white/50 text-xs sm:text-sm font-normal mt-1">
-                  {card.category}
-                </p>
+                <p className="text-white/50 text-xs sm:text-sm font-normal mt-1">{card.category}</p>
               </div>
             </Link>
           ))}

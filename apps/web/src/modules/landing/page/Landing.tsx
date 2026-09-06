@@ -6,14 +6,17 @@ import Footer from '../components/Footer';
 import Faq from '../components/Faq';
 import CtaSection from '../components/CtaSection';
 import QuerySection from '../components/QuerySection';
+import MovingHading from '@/src/modules/landing/components/MovingHading';
 
 function Landing() {
   return (
     <section className="bg-[#000000]">
       <Navbar />
       <Hero />
+      <MovingHading />
       <Features />
-       <QuerySection />
+
+      <QuerySection />
       <FeatureShowcase />
       <Faq />
       <CtaSection />
@@ -23,4 +26,3 @@ function Landing() {
 }
 
 export default Landing;
-
